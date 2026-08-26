@@ -6,7 +6,7 @@
 //
 // or the helpers from here.
 
-export { THEMES, theme, applyTheme, initTheme } from './theme.svelte.js'
+export { THEMES, theme, applyTheme, setDefaultTheme, initTheme } from './theme.svelte.js'
 export {
   formatBytes,
   formatDuration,

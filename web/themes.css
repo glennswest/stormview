@@ -3,61 +3,63 @@
    the picker in the nav sets data-theme on <html> and localStorage keeps it. */
 :root {
   /* surfaces — the ground sits a step darker than the panels so cards read
-     as raised objects, not regions of the same wall */
-  --bg: #0a0a12;
-  --panel: #16192e;
-  --panel-raised: #1e2138;
-  --border: #2e3150;
-  --border-strong: #42466e;
-  --shadow: 0 2px 8px rgb(0 0 0 / 0.35);
+     as raised objects, not regions of the same wall. The default palette is
+     Tokyo Night: low-glare indigo ground, softened foregrounds, and accents
+     that are saturated without being neon. */
+  --bg: #16161e;
+  --panel: #1a1b26;
+  --panel-raised: #24283b;
+  --border: #2f3549;
+  --border-strong: #414868;
+  --shadow: 0 2px 10px rgb(0 0 0 / 0.4);
 
   /* text */
-  --text: #e0e0e0;
-  --text-dim: #888;
-  --text-faint: #666;
-  --text-ghost: #555;
+  --text: #c0caf5;
+  --text-dim: #9aa5ce;
+  --text-faint: #6f7899;
+  --text-ghost: #565f89;
 
   /* brand + semantic */
-  --brand: #e94560;
-  --ok: #50fa7b;
-  --warn: #f1fa8c;
-  --warn-strong: #f0a030;
-  --error: #e94560;
-  --accent: #8be9fd;
-  --purple: #d6acff;
+  --brand: #f7768e;
+  --ok: #9ece6a;
+  --warn: #e0af68;
+  --warn-strong: #ff9e64;
+  --error: #f7768e;
+  --accent: #7dcfff;
+  --purple: #bb9af7;
 
   /* semantic surfaces (badges, buttons) */
-  --ok-bg: #1a4a2a;
-  --ok-border: #2a6a3a;
-  --warn-bg: #4a3a1a;
-  --warn-border: #6a5a2a;
-  --error-bg: #4a1a2a;
-  --error-border: #6a2a3a;
-  --accent-bg: #1a3a4a;
+  --ok-bg: #23301c;
+  --ok-border: #3f5a2f;
+  --warn-bg: #32291a;
+  --warn-border: #57452a;
+  --error-bg: #35222a;
+  --error-border: #5c3a47;
+  --accent-bg: #1c2e42;
 
   /* controls + chrome */
-  --btn-bg: #2a2d50;
-  --nav-hover: #1e2140;
-  --nav-active: #2a2d50;
-  --term-bg: #0a0a14;
+  --btn-bg: #2a2f44;
+  --nav-hover: #1f2335;
+  --nav-active: #2c3350;
+  --term-bg: #131318;
 
   /* ANSI palette for rendered process output */
-  --ansi-black: #555;
-  --ansi-red: #e94560;
-  --ansi-green: #50fa7b;
-  --ansi-yellow: #f1fa8c;
-  --ansi-blue: #6272a4;
-  --ansi-magenta: #ff79c6;
-  --ansi-cyan: #8be9fd;
-  --ansi-white: #ccc;
-  --ansi-br-black: #666;
-  --ansi-br-red: #ff6e6e;
-  --ansi-br-green: #69ff94;
-  --ansi-br-yellow: #ffffa5;
-  --ansi-br-blue: #d6acff;
-  --ansi-br-magenta: #ff92df;
-  --ansi-br-cyan: #a4ffff;
-  --ansi-br-white: #fff;
+  --ansi-black: #414868;
+  --ansi-red: #f7768e;
+  --ansi-green: #9ece6a;
+  --ansi-yellow: #e0af68;
+  --ansi-blue: #7aa2f7;
+  --ansi-magenta: #bb9af7;
+  --ansi-cyan: #7dcfff;
+  --ansi-white: #a9b1d6;
+  --ansi-br-black: #565f89;
+  --ansi-br-red: #ff899d;
+  --ansi-br-green: #b9f27c;
+  --ansi-br-yellow: #f0c987;
+  --ansi-br-blue: #a1bdff;
+  --ansi-br-magenta: #c9a9ff;
+  --ansi-br-cyan: #a4daff;
+  --ansi-br-white: #c0caf5;
 
   /* type */
   --font: -apple-system, 'Segoe UI', system-ui, sans-serif;
@@ -70,6 +72,105 @@
 }
 
 /* --- Themes: token overrides only --- */
+
+[data-theme='catppuccin'] {
+  /* Catppuccin Mocha — pastel accents on warm charcoal, built for long
+     sessions. Colors are the published Mocha palette. */
+  --bg: #11111b;
+  --panel: #1e1e2e;
+  --panel-raised: #313244;
+  --border: #45475a;
+  --border-strong: #585b70;
+  --shadow: 0 2px 10px rgb(0 0 0 / 0.45);
+  --text: #cdd6f4;
+  --text-dim: #a6adc8;
+  --text-faint: #7f849c;
+  --text-ghost: #6c7086;
+  --brand: #cba6f7;
+  --ok: #a6e3a1;
+  --warn: #f9e2af;
+  --warn-strong: #fab387;
+  --error: #f38ba8;
+  --accent: #89dceb;
+  --purple: #cba6f7;
+  --ok-bg: #26382c;
+  --ok-border: #40593f;
+  --warn-bg: #3a3226;
+  --warn-border: #5c5138;
+  --error-bg: #3b2633;
+  --error-border: #5e3a4d;
+  --accent-bg: #23394a;
+  --btn-bg: #313244;
+  --nav-hover: #252537;
+  --nav-active: #45475a;
+  --term-bg: #0d0d15;
+  --ansi-black: #45475a;
+  --ansi-red: #f38ba8;
+  --ansi-green: #a6e3a1;
+  --ansi-yellow: #f9e2af;
+  --ansi-blue: #89b4fa;
+  --ansi-magenta: #f5c2e7;
+  --ansi-cyan: #94e2d5;
+  --ansi-white: #bac2de;
+  --ansi-br-black: #585b70;
+  --ansi-br-red: #f7a1bc;
+  --ansi-br-green: #bcedb8;
+  --ansi-br-yellow: #fbeac4;
+  --ansi-br-blue: #a6c8fb;
+  --ansi-br-magenta: #f8d3ee;
+  --ansi-br-cyan: #b0ebe0;
+  --ansi-br-white: #cdd6f4;
+}
+
+[data-theme='rose'] {
+  /* Rosé Pine — muted rose/iris/foam on deep plum; the gentlest of the
+     dark set. Green is bent slightly toward the palette so health still
+     reads as health. */
+  --bg: #14121f;
+  --panel: #191724;
+  --panel-raised: #21202e;
+  --border: #2f2b42;
+  --border-strong: #45415e;
+  --shadow: 0 2px 10px rgb(0 0 0 / 0.45);
+  --text: #e0def4;
+  --text-dim: #a8a4c4;
+  --text-faint: #797593;
+  --text-ghost: #5f5b78;
+  --brand: #ebbcba;
+  --ok: #96cea9;
+  --warn: #f6c177;
+  --warn-strong: #ea9a97;
+  --error: #eb6f92;
+  --accent: #9ccfd8;
+  --purple: #c4a7e7;
+  --ok-bg: #24352c;
+  --ok-border: #3d5947;
+  --warn-bg: #38301e;
+  --warn-border: #5e5031;
+  --error-bg: #392231;
+  --error-border: #5e3a50;
+  --accent-bg: #223640;
+  --btn-bg: #26233a;
+  --nav-hover: #1f1d2e;
+  --nav-active: #393552;
+  --term-bg: #0f0d17;
+  --ansi-black: #403d52;
+  --ansi-red: #eb6f92;
+  --ansi-green: #96cea9;
+  --ansi-yellow: #f6c177;
+  --ansi-blue: #5a9bb8;
+  --ansi-magenta: #c4a7e7;
+  --ansi-cyan: #9ccfd8;
+  --ansi-white: #e0def4;
+  --ansi-br-black: #56526e;
+  --ansi-br-red: #f08db0;
+  --ansi-br-green: #b0dcbf;
+  --ansi-br-yellow: #f8d29c;
+  --ansi-br-blue: #7fb5cd;
+  --ansi-br-magenta: #d5bfef;
+  --ansi-br-cyan: #b6dde4;
+  --ansi-br-white: #f2f0fc;
+}
 
 [data-theme='midnight'] {
   /* Softer text than pure-white-on-black — parchment-gray, not glare —

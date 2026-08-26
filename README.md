@@ -87,9 +87,12 @@ import RelationPicker from 'stormview/components/RelationPicker.svelte'
 import HealthDot from 'stormview/components/HealthDot.svelte'
 ```
 
-- **`themes.css`** — every design token and six themes (Storm, Midnight,
-  Nord, Solar, Phosphor, Light) as `[data-theme]` token-override blocks.
-  A new theme is a new block. ANSI output and charts read tokens too.
+- **`themes.css`** — every design token and eight themes (Storm — Tokyo
+  Night-based default, Midnight, Catppuccin Mocha, Rosé Pine, Nord, Solar,
+  Phosphor, Light) as `[data-theme]` token-override blocks. A new theme is
+  a new block. ANSI output and charts read tokens too. A server-configured
+  default is applied via `setDefaultTheme(id)` — it yields to a viewer's
+  own pick, which `applyTheme(id)` persists per browser.
 - **`DataGrid`** — the generic grid: injected columns/rows, sortable,
   single/multi selection, and nested child grids via `getChildren(row)`.
 - **`ComponentCard` / `ComponentGrid`** — render `ComponentSummary` values:

@@ -1,5 +1,20 @@
 # Changelog
 
+## [v0.3.0] — 2026-08-26
+
+### Added
+- `LoginPanel` — the sign-in screen as a reusable, token-driven component
+  (glyph, gradient thread, focus ring, inline error with shake).
+- Catppuccin Mocha and Rosé Pine themes — both palettes built for long
+  sessions and low eye strain.
+- `setDefaultTheme(id)`: a server-configured default that yields to the
+  viewer's own persisted pick.
+
+### Changed
+- The Storm default palette is rebased on Tokyo Night: low-glare indigo
+  ground and softened accents instead of Dracula neon on near-black, which
+  read harsh on the eyes.
+
 ## [v0.2.0] — 2026-08-26
 
 ### Added
