@@ -1,0 +1,18 @@
+{
+  "name": "stormview",
+  "version": "0.2.0",
+  "type": "module",
+  "description": "The storm view contract and UI system — Svelte 5 components, themes, and helpers shared by every storm web UI",
+  "license": "MIT",
+  "svelte": "./web/index.js",
+  "exports": {
+    ".": "./web/index.js",
+    "./themes.css": "./web/themes.css",
+    "./theme": "./web/theme.svelte.js",
+    "./utils": "./web/utils.js",
+    "./components/*": "./web/components/*"
+  },
+  "peerDependencies": {
+    "svelte": "^5.0.0"
+  }
+}

@@ -64,6 +64,40 @@ The crate also carries `format_duration` / `format_bytes` so every UI prints
 the same numbers the same way. Everything serializes symmetrically
 (Serialize + Deserialize) — the same types work on either side of the wire.
 
-The reference web renderer (cards, nested `DataGrid`, `RelationPicker`)
-lives in stormd's `web/src/lib/` as Svelte 5 components, written against
-this contract only, so they lift into any storm web UI.
+## The UI system (npm package)
+
+The same repo is also the npm package `stormview` — the reusable web UI
+system, written against this contract only and app-agnostic (no router, no
+API client baked in):
+
+```json
+"dependencies": {
+  "stormview": "git+ssh://git@github.com/glennswest/stormview.git#main"
+}
+```
+
+```js
+import 'stormview/themes.css'                                  // tokens + 6 themes
+import { initTheme, THEMES, applyTheme } from 'stormview/theme' // theme picker state
+import { ansiToHtml, formatBytes } from 'stormview/utils'       // shared helpers
+import DataGrid from 'stormview/components/DataGrid.svelte'
+import ComponentCard from 'stormview/components/ComponentCard.svelte'
+import ComponentGrid from 'stormview/components/ComponentGrid.svelte'
+import RelationPicker from 'stormview/components/RelationPicker.svelte'
+import HealthDot from 'stormview/components/HealthDot.svelte'
+```
+
+- **`themes.css`** — every design token and six themes (Storm, Midnight,
+  Nord, Solar, Phosphor, Light) as `[data-theme]` token-override blocks.
+  A new theme is a new block. ANSI output and charts read tokens too.
+- **`DataGrid`** — the generic grid: injected columns/rows, sortable,
+  single/multi selection, and nested child grids via `getChildren(row)`.
+- **`ComponentCard` / `ComponentGrid`** — render `ComponentSummary` values:
+  cards with metrics/relations/actions; the relational grid with nesting
+  along `has_many`/`has_one`, bulk actions over the selection, and
+  relation pickers. Host apps pass `resolve(id)` (feed lookup) and
+  optionally `invoke(action)`; navigation is plain `#/…` hash hrefs.
+- Components ship as Svelte 5 source — the host app's Vite/svelte plugin
+  compiles them; `svelte` is a peer dependency.
+
+stormd's `web/` is the reference host app (routing, auth, stores, views).
