@@ -48,4 +48,8 @@
   `format_bytes` helpers.
 
 ## [Unreleased]
+
+### 2026-08-26
+- **docs:** Consumers updated: stormdrive v0.4.0 and stormstorage v0.2.0
+  now serve the components feed (+/ws/components) with real actions
 <!-- New unreleased changes go here -->

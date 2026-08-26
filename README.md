@@ -57,7 +57,11 @@ stormview = { git = "https://github.com/glennswest/stormview", branch = "main" }
 
 - **stormd** — assembles the feed (`components.rs`) and serves it.
 - **stormsh** — renders it as TUI tiles.
-- **stormdrive / stormconsole** — planned: drives, volumes, nodes and fleets
+- **stormdrive** (v0.4.0) — serves drives + shelves with locate/fleet/
+  test/designation actions at `/api/v1/components` + `/ws/components`.
+- **stormstorage** (v0.2.0) — serves the federation: pools, nodes,
+  distributed volumes with legs as relations, same two endpoints.
+- **stormconsole** — planned: aggregates every feed into the fleet console
   are components with relations like any other.
 
 The crate also carries `format_duration` / `format_bytes` so every UI prints
