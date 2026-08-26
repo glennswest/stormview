@@ -1,9 +1,16 @@
 <script>
   // The login screen, as a reusable panel: the host passes the instance name
-  // and an async onsubmit(password); errors render inline. Fully token-
-  // driven, so it wears whatever theme the page has.
-  let { title = 'storm', subtitle = 'sign in to continue', onsubmit } = $props()
+  // and an async onsubmit(username, password); errors render inline. Fully
+  // token-driven, so it wears whatever theme the page has. Set
+  // askUsername={false} for password-only hosts.
+  let {
+    title = 'storm',
+    subtitle = 'sign in to continue',
+    askUsername = true,
+    onsubmit,
+  } = $props()
 
+  let username = $state('')
   let password = $state('')
   let error = $state('')
   let busy = $state(false)
@@ -15,7 +22,7 @@
     busy = true
     error = ''
     try {
-      await onsubmit(password)
+      await onsubmit(username, password)
     } catch (err) {
       error = err?.message || 'login failed'
       password = ''
@@ -32,15 +39,34 @@
     <div class="glyph">⛈</div>
     <div class="title">{title}</div>
     <div class="subtitle">{subtitle}</div>
-    <!-- svelte-ignore a11y_autofocus -->
-    <input
-      type="password"
-      placeholder="Password"
-      bind:value={password}
-      autofocus
-      autocomplete="current-password"
-      disabled={busy}
-    />
+    {#if askUsername}
+      <!-- svelte-ignore a11y_autofocus -->
+      <input
+        type="text"
+        placeholder="User"
+        bind:value={username}
+        autofocus
+        autocomplete="username"
+        disabled={busy}
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        bind:value={password}
+        autocomplete="current-password"
+        disabled={busy}
+      />
+    {:else}
+      <!-- svelte-ignore a11y_autofocus -->
+      <input
+        type="password"
+        placeholder="Password"
+        bind:value={password}
+        autofocus
+        autocomplete="current-password"
+        disabled={busy}
+      />
+    {/if}
     <button type="submit" disabled={busy || !password}>
       {busy ? 'Signing in…' : 'Sign in'}
     </button>
@@ -82,7 +108,7 @@
     left: 0;
     right: 0;
     height: 2px;
-    background: linear-gradient(90deg, var(--brand), var(--purple), var(--accent));
+    background: linear-gradient(90deg, var(--brand), var(--accent));
   }
   .glyph {
     width: 58px;

@@ -73,6 +73,104 @@
 
 /* --- Themes: token overrides only --- */
 
+[data-theme='one'] {
+  /* One Dark — the Atom/VS Code classic: slate gray ground, balanced
+     mid-saturation accents. */
+  --bg: #1b1f27;
+  --panel: #282c34;
+  --panel-raised: #2c313a;
+  --border: #3a3f4b;
+  --border-strong: #4b5263;
+  --shadow: 0 2px 10px rgb(0 0 0 / 0.4);
+  --text: #abb2bf;
+  --text-dim: #9da5b4;
+  --text-faint: #6b7383;
+  --text-ghost: #545b68;
+  --brand: #e06c75;
+  --ok: #98c379;
+  --warn: #e5c07b;
+  --warn-strong: #d19a66;
+  --error: #e06c75;
+  --accent: #61afef;
+  --purple: #c678dd;
+  --ok-bg: #2b3627;
+  --ok-border: #46543c;
+  --warn-bg: #363023;
+  --warn-border: #574d35;
+  --error-bg: #362a2c;
+  --error-border: #573f44;
+  --accent-bg: #243447;
+  --btn-bg: #333842;
+  --nav-hover: #2c313a;
+  --nav-active: #3a3f4b;
+  --term-bg: #181b20;
+  --ansi-black: #3f4451;
+  --ansi-red: #e06c75;
+  --ansi-green: #98c379;
+  --ansi-yellow: #e5c07b;
+  --ansi-blue: #61afef;
+  --ansi-magenta: #c678dd;
+  --ansi-cyan: #56b6c2;
+  --ansi-white: #abb2bf;
+  --ansi-br-black: #545b68;
+  --ansi-br-red: #ea8a91;
+  --ansi-br-green: #b2d39a;
+  --ansi-br-yellow: #edd3a1;
+  --ansi-br-blue: #8ac4f4;
+  --ansi-br-magenta: #d69ce8;
+  --ansi-br-cyan: #82cad3;
+  --ansi-br-white: #c8cdd5;
+}
+
+[data-theme='gruvbox'] {
+  /* Gruvbox Material — retro warm dark: umber ground, sandy text, earthen
+     accents. */
+  --bg: #161819;
+  --panel: #1d2021;
+  --panel-raised: #282828;
+  --border: #3c3836;
+  --border-strong: #504945;
+  --shadow: 0 2px 10px rgb(0 0 0 / 0.45);
+  --text: #d4be98;
+  --text-dim: #a89984;
+  --text-faint: #7c6f64;
+  --text-ghost: #665c54;
+  --brand: #e78a4e;
+  --ok: #a9b665;
+  --warn: #d8a657;
+  --warn-strong: #e78a4e;
+  --error: #ea6962;
+  --accent: #7daea3;
+  --purple: #d3869b;
+  --ok-bg: #2e3220;
+  --ok-border: #4d5433;
+  --warn-bg: #342e1d;
+  --warn-border: #595030;
+  --error-bg: #362220;
+  --error-border: #5a3a36;
+  --accent-bg: #253634;
+  --btn-bg: #32302f;
+  --nav-hover: #242627;
+  --nav-active: #3c3836;
+  --term-bg: #141617;
+  --ansi-black: #504945;
+  --ansi-red: #ea6962;
+  --ansi-green: #a9b665;
+  --ansi-yellow: #d8a657;
+  --ansi-blue: #7daea3;
+  --ansi-magenta: #d3869b;
+  --ansi-cyan: #89b482;
+  --ansi-white: #d4be98;
+  --ansi-br-black: #665c54;
+  --ansi-br-red: #f08a84;
+  --ansi-br-green: #bec687;
+  --ansi-br-yellow: #e3ba7c;
+  --ansi-br-blue: #9cc1b8;
+  --ansi-br-magenta: #dfa2b3;
+  --ansi-br-cyan: #a4c69e;
+  --ansi-br-white: #e5d5b5;
+}
+
 [data-theme='catppuccin'] {
   /* Catppuccin Mocha — pastel accents on warm charcoal, built for long
      sessions. Colors are the published Mocha palette. */
@@ -86,7 +184,7 @@
   --text-dim: #a6adc8;
   --text-faint: #7f849c;
   --text-ghost: #6c7086;
-  --brand: #cba6f7;
+  --brand: #fab387;
   --ok: #a6e3a1;
   --warn: #f9e2af;
   --warn-strong: #fab387;
@@ -357,6 +455,104 @@
   --ansi-br-cyan: #a3ffe0;
   --ansi-br-white: #eafff2;
   --font: 'SF Mono', 'Fira Code', 'Cascadia Code', ui-monospace, monospace;
+}
+
+[data-theme='frost'] {
+  /* Frost — cool nordic light: blue-gray ground, white panels, darkened
+     Nord accents that hold contrast on white. */
+  --bg: #e8ecf2;
+  --panel: #ffffff;
+  --panel-raised: #e9edf3;
+  --border: #d0d7e2;
+  --border-strong: #aeb9cc;
+  --shadow: 0 1px 4px rgb(30 41 59 / 0.1);
+  --text: #2e3440;
+  --text-dim: #4c566a;
+  --text-faint: #6e7891;
+  --text-ghost: #98a1b3;
+  --brand: #c15062;
+  --ok: #4c7f42;
+  --warn: #9a7100;
+  --warn-strong: #b25c2b;
+  --error: #b04552;
+  --accent: #3f6ea6;
+  --purple: #806bab;
+  --ok-bg: #e0ecdb;
+  --ok-border: #b5cfa9;
+  --warn-bg: #f4e9c8;
+  --warn-border: #dcc98e;
+  --error-bg: #f6dee1;
+  --error-border: #e4aeb5;
+  --accent-bg: #dde8f4;
+  --btn-bg: #e5e9f0;
+  --nav-hover: #eceff4;
+  --nav-active: #dde3ed;
+  --term-bg: #f7f9fc;
+  --ansi-black: #4c566a;
+  --ansi-red: #b04552;
+  --ansi-green: #4c7f42;
+  --ansi-yellow: #9a7100;
+  --ansi-blue: #3f6ea6;
+  --ansi-magenta: #806bab;
+  --ansi-cyan: #3c7f8c;
+  --ansi-white: #5b6478;
+  --ansi-br-black: #6e7891;
+  --ansi-br-red: #963641;
+  --ansi-br-green: #3d6a35;
+  --ansi-br-yellow: #7f5d00;
+  --ansi-br-blue: #305a8c;
+  --ansi-br-magenta: #695690;
+  --ansi-br-cyan: #2f6a76;
+  --ansi-br-white: #2e3440;
+}
+
+[data-theme='paper'] {
+  /* Paper — warm sepia light in the Solarized Light family: cream ground,
+     parchment panels, ink-dark foregrounds. */
+  --bg: #f0e9d6;
+  --panel: #faf5e6;
+  --panel-raised: #f0e8d2;
+  --border: #dcd2b4;
+  --border-strong: #c4b892;
+  --shadow: 0 1px 4px rgb(90 70 20 / 0.12);
+  --text: #443c2c;
+  --text-dim: #756a50;
+  --text-faint: #948a6e;
+  --text-ghost: #ada288;
+  --brand: #c04a63;
+  --ok: #5f7f1f;
+  --warn: #9a7b00;
+  --warn-strong: #b35c17;
+  --error: #c33431;
+  --accent: #2075c7;
+  --purple: #6c71c4;
+  --ok-bg: #e6ecc9;
+  --ok-border: #c2d190;
+  --warn-bg: #f2e6bc;
+  --warn-border: #dcc684;
+  --error-bg: #f6dcd3;
+  --error-border: #e2ab9c;
+  --accent-bg: #dbe7ee;
+  --btn-bg: #ece2c8;
+  --nav-hover: #f0e8d2;
+  --nav-active: #e4d9ba;
+  --term-bg: #fbf7ea;
+  --ansi-black: #56503b;
+  --ansi-red: #c33431;
+  --ansi-green: #5f7f1f;
+  --ansi-yellow: #9a7b00;
+  --ansi-blue: #2075c7;
+  --ansi-magenta: #c2438a;
+  --ansi-cyan: #17808a;
+  --ansi-white: #6f654c;
+  --ansi-br-black: #756a50;
+  --ansi-br-red: #a52521;
+  --ansi-br-green: #4c6717;
+  --ansi-br-yellow: #7f6500;
+  --ansi-br-blue: #175da6;
+  --ansi-br-magenta: #a33372;
+  --ansi-br-cyan: #0f6a73;
+  --ansi-br-white: #443c2c;
 }
 
 [data-theme='light'] {

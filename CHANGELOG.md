@@ -1,5 +1,18 @@
 # Changelog
 
+## [v0.4.0] — 2026-08-26
+
+### Added
+- Four themes: One (One Dark) and Gruvbox (Material) dark; Frost (cool
+  nordic) and Paper (warm sepia) light — twelve total, dark-then-light in
+  the picker.
+- `LoginPanel` asks for user + password (`onsubmit(username, password)`);
+  `askUsername={false}` keeps the password-only form.
+
+### Changed
+- Catppuccin's brand color is peach instead of mauve, and the login panel's
+  gradient thread drops the purple midpoint — per review.
+
 ## [v0.3.0] — 2026-08-26
 
 ### Added

@@ -1,6 +1,6 @@
 {
   "name": "stormview",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "type": "module",
   "description": "The storm view contract and UI system — Svelte 5 components, themes, and helpers shared by every storm web UI",
   "license": "MIT",

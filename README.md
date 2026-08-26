@@ -87,9 +87,9 @@ import RelationPicker from 'stormview/components/RelationPicker.svelte'
 import HealthDot from 'stormview/components/HealthDot.svelte'
 ```
 
-- **`themes.css`** — every design token and eight themes (Storm — Tokyo
-  Night-based default, Midnight, Catppuccin Mocha, Rosé Pine, Nord, Solar,
-  Phosphor, Light) as `[data-theme]` token-override blocks. A new theme is
+- **`themes.css`** — every design token and twelve themes (dark: Storm —
+  Tokyo Night-based default, One, Gruvbox, Catppuccin Mocha, Rosé Pine,
+  Midnight, Nord, Solar, Phosphor; light: Light, Frost, Paper) as `[data-theme]` token-override blocks. A new theme is
   a new block. ANSI output and charts read tokens too. A server-configured
   default is applied via `setDefaultTheme(id)` — it yields to a viewer's
   own pick, which `applyTheme(id)` persists per browser.

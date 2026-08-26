@@ -5,14 +5,20 @@
 // fleet looks like one system.
 
 export const THEMES = [
+  // dark
   { id: 'storm', label: 'Storm' },
-  { id: 'midnight', label: 'Midnight' },
+  { id: 'one', label: 'One' },
+  { id: 'gruvbox', label: 'Gruvbox' },
   { id: 'catppuccin', label: 'Catppuccin' },
   { id: 'rose', label: 'Rosé' },
+  { id: 'midnight', label: 'Midnight' },
   { id: 'nord', label: 'Nord' },
   { id: 'solar', label: 'Solar' },
   { id: 'phosphor', label: 'Phosphor' },
+  // light
   { id: 'light', label: 'Light' },
+  { id: 'frost', label: 'Frost' },
+  { id: 'paper', label: 'Paper' },
 ]
 
 const KEY = 'storm-theme'
