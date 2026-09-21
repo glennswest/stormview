@@ -73,6 +73,28 @@ pub struct Action {
     pub path: String,
     pub enabled: bool,
     pub danger: bool,
+    /// How the control should read: `ok`, `warn`, `accent`, `muted`.
+    ///
+    /// The same vocabulary [`Metric::tone`] uses, and for the same reason —
+    /// a renderer should be told what a thing *means* rather than what colour
+    /// to paint. `danger` is the one tone that predates this and it stays as
+    /// its own field, because it also gates a confirmation prompt: a tone is
+    /// a suggestion about appearance, and that one is a behaviour.
+    ///
+    /// The case this arrived for: a "Make golden" button on a catalogue
+    /// entry, which after the golden exists should say so at a glance
+    /// instead of looking identical to every entry that has never been
+    /// built. A label alone does not carry down a list of thirty.
+    #[serde(skip_serializing_if = "Option::is_none", default)]
+    pub tone: Option<String>,
+}
+
+impl Action {
+    /// Set the tone. Chainable, like [`Metric::tone`].
+    pub fn tone(mut self, tone: &str) -> Self {
+        self.tone = Some(tone.to_string());
+        self
+    }
 }
 
 /// How one component relates to another.
@@ -224,6 +246,7 @@ mod tests {
                 path: "/api/v1/processes/web/stop".into(),
                 enabled: true,
                 danger: true,
+                tone: None,
             }],
             relations: vec![
                 Relation::belongs_to("system", "system"),
