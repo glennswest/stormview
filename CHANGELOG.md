@@ -49,6 +49,20 @@
 
 ## [Unreleased]
 
+### 2026-09-24
+- **docs:** README, CLAUDE.md and module docs rewritten from the code (#2):
+  every field, prop and default as the source has it; the consumer list
+  checked against stormd, stormdrive, stormstorage, stormipmi, stormconsole
+  and stormcentral; how it ships (library from `main`, no golden); known
+  gaps filed as #4, #5, #6.
+- **fix:** `Cargo.toml` version was still 0.1.0 while `package.json` and the
+  tags were at 0.4.0 — aligned to 0.4.0.
+
+### 2026-09-20
+- **feat:** `Action.tone` (`ok | warn | accent | muted`, optional) — what a
+  control means, separate from `danger`, which also gates a confirm.
+  `DataGrid` renders the `ok`/`warn` tones.
+
 ### 2026-08-26
 - **docs:** Consumers updated: stormdrive v0.4.0 and stormstorage v0.2.0
   now serve the components feed (+/ws/components) with real actions

@@ -1,6 +1,7 @@
 /* Design tokens — the entire look and feel lives here. Components reference
    tokens only, so a theme is nothing but a block of token overrides below;
-   the picker in the nav sets data-theme on <html> and localStorage keeps it. */
+   theme.svelte.js sets data-theme on <html> (none for the default, Storm)
+   and localStorage keeps the viewer's pick. */
 :root {
   /* surfaces — the ground sits a step darker than the panels so cards read
      as raised objects, not regions of the same wall. The default palette is

@@ -2,10 +2,12 @@
 //!
 //! Every storm daemon that has something to show describes it in one shape —
 //! the [`ComponentSummary`] — and every storm UI (stormd's web SPA, stormsh's
-//! TUI tiles, and later stormdrive and stormconsole) renders that shape
-//! generically. A subsystem that reports a summary appears in every UI with
-//! no per-UI work, and the UIs cannot drift apart because none of them owns
-//! the model.
+//! TUI tiles, stormconsole's aggregated fleet view) renders that shape
+//! generically. Daemons serve it as a JSON array, by convention at
+//! `GET /api/v1/components` (plus `/ws/components` snapshots); the endpoints
+//! belong to the daemons, not to this crate. A subsystem that reports a
+//! summary appears in every UI with no per-UI work, and the UIs cannot drift
+//! apart because none of them owns the model.
 //!
 //! Components relate to each other with the ORM vocabulary — `has_one`,
 //! `has_many`, `belongs_to` — as typed edges between component ids in the
@@ -19,6 +21,7 @@
 use serde::{Deserialize, Serialize};
 
 /// Component health, in the order a viewer sorts by: broken first.
+/// Lowercase on the wire.
 #[derive(Debug, Clone, Copy, PartialEq, Serialize, Deserialize)]
 #[serde(rename_all = "lowercase")]
 pub enum Health {
@@ -157,7 +160,8 @@ pub struct ComponentSummary {
     /// Stable identity, e.g. "system", "process:web", "cron:backup".
     pub id: String,
     /// A short noun: "system", "process", "plugin", "cron", "storage",
-    /// "logs", "updater" — and whatever stormdrive and stormconsole add.
+    /// "logs", "updater" — and whatever other daemons add ("drive",
+    /// "baremetalhost", …).
     /// Renderers treat it as a grouping label, not an enum.
     pub kind: String,
     pub label: String,
@@ -178,6 +182,7 @@ pub struct ComponentSummary {
 
 // --- Shared formatting, so every UI prints the same numbers the same way ---
 
+/// Two largest units: `42s`, `1m 30s`, `1h 1m`, `1d 1h`. Negatives clamp to `0s`.
 pub fn format_duration(secs: i64) -> String {
     let secs = secs.max(0);
     let days = secs / 86400;
@@ -195,6 +200,7 @@ pub fn format_duration(secs: i64) -> String {
     }
 }
 
+/// Binary (1024) steps, one decimal above bytes: `512 B`, `2.0 KB`, up to TB.
 pub fn format_bytes(bytes: u64) -> String {
     const UNITS: [&str; 5] = ["B", "KB", "MB", "GB", "TB"];
     let mut value = bytes as f64;
