@@ -31,6 +31,7 @@ shared by every storm daemon and web UI. Cross-project rules live in
 - `web/theme.svelte.js` — theme list and selection state.
 - `web/themes.css` — tokens, 12 themes, base control styles.
 - `web/utils.js` — JS formatting helpers and `ansiToHtml`.
+- `docs/presentation.md` — Marp slide deck (purpose and functionality).
 - `web/components/*.svelte` — DataGrid, ComponentCard, ComponentGrid,
   RelationPicker, HealthDot, LoginPanel.
 
@@ -40,10 +41,7 @@ shared by every storm daemon and web UI. Cross-project rules live in
 - [x] #2 docs: README / CLAUDE.md / module docs rewritten from the code;
       Cargo.toml version aligned with package.json (0.4.0); `Action.tone`
       changelogged (unreleased); doc/code gaps filed as #4, #5, #6.
-
-### In progress
-- [ ] #3 docs: Marp deck at `docs/presentation.md` (8–15 slides) from the
-      code and the #2 docs.
+- [x] #3 docs: Marp deck at `docs/presentation.md` (13 slides).
 
 ### Queued
 - #4 ComponentCard ignores `Action.tone`; DataGrid renders only ok/warn.

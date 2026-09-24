@@ -18,6 +18,9 @@ This repo is two packages from one tree:
 A subsystem that reports a summary appears in every UI with no per-UI
 work, and the UIs cannot drift apart because none of them owns the model.
 
+A slide overview lives in [`docs/presentation.md`](docs/presentation.md)
+(Marp: `npx @marp-team/marp-cli docs/presentation.md`).
+
 ## What it is not
 
 stormview is a library. It has **no binary, no ports, no config file, no

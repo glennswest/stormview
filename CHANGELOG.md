@@ -50,6 +50,9 @@
 ## [Unreleased]
 
 ### 2026-09-24
+- **docs:** `docs/presentation.md` — a 13-slide Marp deck on stormview's
+  purpose, place in stormcos, contract, UI system, interfaces, shipping,
+  planned work and status, every claim drawn from the code (#3).
 - **docs:** README, CLAUDE.md and module docs rewritten from the code (#2):
   every field, prop and default as the source has it; the consumer list
   checked against stormd, stormdrive, stormstorage, stormipmi, stormconsole
