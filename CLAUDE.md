@@ -41,7 +41,7 @@ shared by every storm daemon and web UI. Cross-project rules live in
 - [x] #2 docs: README / CLAUDE.md / module docs rewritten from the code;
       Cargo.toml version aligned with package.json (0.4.0); `Action.tone`
       changelogged (unreleased); doc/code gaps filed as #4, #5, #6.
-- [x] #3 docs: Marp deck at `docs/presentation.md` (13 slides).
+- [x] #3 docs: Marp deck at `docs/presentation.md` (12 slides).
 
 ### Queued
 - #4 ComponentCard ignores `Action.tone`; DataGrid renders only ok/warn.

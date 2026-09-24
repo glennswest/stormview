@@ -50,7 +50,7 @@
 ## [Unreleased]
 
 ### 2026-09-24
-- **docs:** `docs/presentation.md` — a 13-slide Marp deck on stormview's
+- **docs:** `docs/presentation.md` — a 12-slide Marp deck on stormview's
   purpose, place in stormcos, contract, UI system, interfaces, shipping,
   planned work and status, every claim drawn from the code (#3).
 - **docs:** README, CLAUDE.md and module docs rewritten from the code (#2):
