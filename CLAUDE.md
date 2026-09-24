@@ -41,9 +41,12 @@ shared by every storm daemon and web UI. Cross-project rules live in
       Cargo.toml version aligned with package.json (0.4.0); `Action.tone`
       changelogged (unreleased); doc/code gaps filed as #4, #5, #6.
 
+### In progress
+- [ ] #3 docs: Marp deck at `docs/presentation.md` (8–15 slides) from the
+      code and the #2 docs.
+
 ### Queued
 - #4 ComponentCard ignores `Action.tone`; DataGrid renders only ok/warn.
 - #5 JS `formatDuration` doesn't clamp negatives like Rust.
 - #6 HealthDot glow colours hardcoded, not tokens.
-- #3 docs: a presentation of its purpose and functionality.
 - #1 LoginPanel: TOTP step and first-time enrolment.
