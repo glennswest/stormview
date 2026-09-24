@@ -36,11 +36,14 @@ shared by every storm daemon and web UI. Cross-project rules live in
 
 ## Work plan
 
-### In progress
-- [ ] #2 docs: rewrite README / CLAUDE.md / module docs from the code;
-      align Cargo.toml version with package.json; changelog the
-      unlogged `Action.tone`; file issues for doc/code gaps.
+### Done
+- [x] #2 docs: README / CLAUDE.md / module docs rewritten from the code;
+      Cargo.toml version aligned with package.json (0.4.0); `Action.tone`
+      changelogged (unreleased); doc/code gaps filed as #4, #5, #6.
 
 ### Queued
+- #4 ComponentCard ignores `Action.tone`; DataGrid renders only ok/warn.
+- #5 JS `formatDuration` doesn't clamp negatives like Rust.
+- #6 HealthDot glow colours hardcoded, not tokens.
 - #3 docs: a presentation of its purpose and functionality.
 - #1 LoginPanel: TOTP step and first-time enrolment.
