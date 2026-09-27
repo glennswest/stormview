@@ -43,6 +43,18 @@ shared by every storm daemon and web UI. Cross-project rules live in
       changelogged (unreleased); doc/code gaps filed as #4, #5, #6.
 - [x] #3 docs: Marp deck at `docs/presentation.md` (12 slides).
 
+### In progress
+- [ ] #8 test containers (short/medium/long) per stormcentral
+      docs/test-standard.md. stormview has nothing running on a node, so the
+      image tests the contract two ways: in the container (the wire shape,
+      the helpers), and against the feeds the node's daemons serve
+      (`GET /api/v1/components`, `/ws/components` on stormd :8269/:9080,
+      stormdrive :9092, stormstorage :9093, stormipmi :9097), deserialized
+      with this commit's types. Own cargo workspace under `test/`
+      (stormcast's pattern), static musl binary staged by `test/build.sh`,
+      `FROM scratch`. A feed that doesn't answer is skipped; if none
+      answers, exit 2.
+
 ### Queued
 - #4 ComponentCard ignores `Action.tone`; DataGrid renders only ok/warn.
 - #5 JS `formatDuration` doesn't clamp negatives like Rust.
