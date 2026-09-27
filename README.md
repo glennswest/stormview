@@ -296,9 +296,38 @@ Never on the VM and never as root: push, then
 sc-build            # cargo build && cargo test on dev.g8.lo, from the pushed commit
 ```
 
-The tests cover the formatting helpers and a JSON round-trip of a full
-summary. The Svelte half has no build or test step here; it is exercised
-by the host apps' builds.
+The unit tests cover the formatting helpers and a JSON round-trip of a
+full summary. The Svelte half has no build or test step here; it is
+exercised by the host apps' builds.
+
+### The test container (`test/`)
+
+Per stormcentral's `docs/test-standard.md`, stormview has a test image,
+run by stormcentral as a Job on every test machine:
+`stormcentral test run stormview short|medium|long`. `test/build.sh` builds
+the static test binary (its own cargo workspace, `test/Cargo.toml`,
+compiled against this checkout's crate) and `test/Containerfile` packages
+it `FROM scratch` as `/test`. `test/stormview-test.yaml` records the Job
+and the suites' metadata.
+
+stormview runs nothing on a node, so what it tests there is the contract
+itself and the feeds built from it: the commit under test is checked in
+the pod, then used to read `GET /api/v1/components` (and
+`/ws/components`) from the node's daemons — stormd `:8269` (else `:9080`),
+stormdrive `:9092`, stormstorage `:9093`, stormipmi `:9097`, or
+`STORMVIEW_FEEDS=name=host:port,…`. It is read-only: no API, nothing
+created, no action ever invoked; `requires: []`.
+
+| suite | what it checks |
+|---|---|
+| `short` | the README's example summary serializes to the documented JSON and back; every feed on the node reads with this commit's types |
+| `medium` | also: defaults, refusals (bad health / relation kind, missing fields), health order, builders, `format_duration`/`format_bytes` tables; per feed, integrity (unique ids, relation targets in the feed, methods, absolute action paths, tone vocabulary, hash links), exact read-back (no fields the contract doesn't know), and the first websocket snapshot matching `GET` |
+| `long` | waves until the window ends: readers at 2 per pod CPU (×1–3 by wave), half polling the node's feeds, half round-tripping a synthetic feed sized from the pod's memory; per wave p50/p95, errors, this process's RSS and open descriptors; `trend` fails on a wave slower than the first of its size, or residue that grows |
+
+A feed that isn't served is **skip**, and so is one behind a login
+(401/403: no credentials are handed in or baked in). If none answers at
+all, the run exits 2. Results are JSON lines on stdout and in
+`/results/results.jsonl`.
 
 ## How it ships
 

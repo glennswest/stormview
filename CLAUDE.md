@@ -34,6 +34,10 @@ shared by every storm daemon and web UI. Cross-project rules live in
 - `docs/presentation.md` — Marp slide deck (purpose and functionality).
 - `web/components/*.svelte` — DataGrid, ComponentCard, ComponentGrid,
   RelationPicker, HealthDot, LoginPanel.
+- `test/` — the stormcos test container (own cargo workspace; `build.sh`,
+  `Containerfile`, `stormview-test.yaml`, `src/`: contract checks, feed
+  reader, HTTP/websocket client, short/medium/long suites). sc-build it
+  with `sc-build 'cargo test && cargo test --manifest-path test/Cargo.toml && test/build.sh'`.
 
 ## Work plan
 

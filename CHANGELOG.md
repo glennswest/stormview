@@ -49,6 +49,19 @@
 
 ## [Unreleased]
 
+### 2026-09-27
+- **test:** the stormcos test container (#8), per stormcentral
+  `docs/test-standard.md`: `test/` is its own cargo workspace building one
+  static `FROM scratch` image, `/test short|medium|long`. stormview runs
+  nothing on a node, so the suites test the contract of the commit under
+  test in the pod (documented wire form, defaults, refusals, builders,
+  formatting) and read the components feeds the node's daemons serve
+  (stormd, stormdrive, stormstorage, stormipmi) with it: `short` — the
+  wire form and every feed reads; `medium` — the whole contract, plus each
+  feed's integrity, exact read-back and websocket snapshot; `long` —
+  overnight waves of readers sized from the pod, trended for slowdown and
+  residue. Read-only, no API, `requires: []`.
+
 ### 2026-09-24
 - **docs:** `docs/presentation.md` — a 12-slide Marp deck on stormview's
   purpose, place in stormcos, contract, UI system, interfaces, shipping,
