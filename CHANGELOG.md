@@ -50,6 +50,8 @@
 ## [Unreleased]
 
 ### 2026-09-27
+- **docs:** work plan: #8's machine run is now blocked on C2NR0Q2's sbregistry
+  (:5100, connection refused) and on stormcentral#56. The /readyz wait has cleared.
 - **docs:** refreshed from the code since 2026-09-18 (`Action.tone`, the
   test container). The consumer list was re-checked on 2026-09-27: stormconsole's fleet plugin now
   reads node feeds. The README gains the stormcos feed port layout (from

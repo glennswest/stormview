@@ -53,9 +53,11 @@ shared by every storm daemon and web UI. Cross-project rules live in
       the static musl `test/build.sh` pass on sc-build. **Left:** a real
       `stormcentral test run stormview short|medium` on a test machine.
       Blocked: run e993dc0dc0 errored before the image stage (C2NR0Q2's
-      apiserver never answered /readyz), and every run currently dies on
-      stormcentral#56 (`@@RESULT` quoting). Rerun once #56 is fixed and a
-      test machine is up; close #8 on a passing run.
+      apiserver never answered /readyz). 2026-09-27: C2NR0Q2 on 11.50
+      now answers /readyz, but its sbregistry (:5100) refuses connections
+      (runs 43e9193e15, 2146f21771, dcae784bb9; noted on stormcentral#63),
+      and stormcentral#56 (`@@RESULT` quoting) is still open. Rerun
+      `short` and `medium` once both are fixed; close #8 on a passing run.
 
 ### Queued
 - #11 test: default feed list → the stormcos port layout (P1).
