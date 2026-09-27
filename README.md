@@ -344,8 +344,17 @@ created, no action ever invoked; `requires: []`.
 
 A feed that isn't served is **skip**, and so is one behind a login
 (401/403: no credentials are handed in or baked in). If none answers at
-all, the run exits 2. Results are JSON lines on stdout and in
-`/results/results.jsonl`.
+all, that is an infrastructure error. Results are JSON lines on stdout and
+in `/results/results.jsonl`, then a `{"summary": {pass, fail, skip}}` line
+(infrastructure errors count as `fail`). The exit code is 0 when nothing
+failed, 1 when a test failed, and 2 when only infrastructure did (no
+`STORM_NODE` and no `STORMVIEW_FEEDS`, no feed answering, an unknown suite).
+
+Build and unit-test it, with the crate, on the build box:
+
+```sh
+sc-build 'cargo test && cargo test --manifest-path test/Cargo.toml && test/build.sh'
+```
 
 ## How it ships
 
@@ -368,5 +377,7 @@ What the contract or docs promise that the renderers don't do yet:
 - `HealthDot`'s glow uses hardcoded colours, not theme tokens — #6.
 - The test container reads 5 of a node's ~18 feed ports, one of which
   (8269) is not in the layout — #11.
-- The test container has not yet passed a run on a test machine; runs
-  are blocked on stormcentral#56 — #8.
+- The test container has not yet passed a run on a test machine. Runs
+  are blocked on stormcentral#56 (`@@RESULT` quoting) and, on C2NR0Q2
+  (11.50), on the node's sbregistry not listening on :5100
+  (stormcos#135) — #8.

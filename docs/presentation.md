@@ -193,7 +193,8 @@ the renderers.
   exhaust-matches `kind`, fields are added optional
 - Docs refreshed from the code (#2, again 2026-09-27)
 - Test container built and passing sc-build (#8); its first run on a
-  test machine waits on stormcentral#56
+  test machine waits on stormcentral#56 and stormcos#135 (the node's
+  sbregistry)
 - Open issues that matter: #4 (tone rendering — stormconsole's vmimages
   catalogue already sets `tone: "warn"` on its golden "Retry" action),
   #1 (TOTP login for every web UI)

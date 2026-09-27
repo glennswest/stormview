@@ -50,6 +50,10 @@
 ## [Unreleased]
 
 ### 2026-09-27
+- **docs:** refreshed again from the code since 2026-09-18. README: the test
+  container's exit codes (0 / 1 test failed / 2 infrastructure only) and summary
+  line, and its sc-build command. README and deck: #8's machine run now also
+  waits on stormcos#135 (C2NR0Q2's sbregistry). No new gaps found.
 - **docs:** work plan: #8's machine run is now blocked on C2NR0Q2's sbregistry
   (:5100, connection refused) and on stormcentral#56. The /readyz wait has cleared.
 - **docs:** refreshed from the code since 2026-09-18 (`Action.tone`, the
