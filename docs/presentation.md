@@ -110,7 +110,9 @@ the renderers.
   (`ok | warn | accent | muted`, Unreleased) — what a control means
 - `format_duration` (`1h 1m`, clamps negatives) and `format_bytes`
   (`2.0 KB`, 1024 steps) so every UI prints numbers alike
-- Tests: helper formatting and a full-summary JSON round-trip
+- Tests: helper formatting and a full-summary JSON round-trip; a
+  stormcos test container (`test/`, `/test short|medium|long`) that checks
+  the contract in the pod and reads the node's feeds with it (#8)
 
 ---
 
@@ -152,7 +154,7 @@ the renderers.
 | **Rust** | `stormview = { git = "https://github.com/glennswest/stormview", branch = "main" }` |
 | **npm** | `"stormview": "github:glennswest/stormview#main"`; exports `.`, `./themes.css`, `./theme`, `./utils`, `./components/*` |
 | **Peer dep** | `svelte ^5` — components ship as source, the host compiles |
-| **Feed convention** | `GET /api/v1/components`, `/ws/components` — served by daemons |
+| **Feed convention** | `GET /api/v1/components`, `/ws/components` — served by daemons; on a node, stormd instances on 9080–9085 and each service's port + 100 |
 | **Ports / CLI / config** | none — it is a library |
 | **Health / metrics** | none of its own; it *defines* the health vocabulary |
 
@@ -178,6 +180,9 @@ the renderers.
   tones (today: card colours by action id, grid only `ok`/`warn`)
 - **#5** JS `formatDuration` clamps negatives like the Rust one
 - **#6** HealthDot's glow from theme tokens instead of fixed colours
+- **#11** test container reads the whole stormcos feed port layout
+- **#9 / #10** a storage view: decide whether stormview reads
+  `storage.storm.io` or a daemon serves it as a feed
 
 ---
 
@@ -186,7 +191,9 @@ the renderers.
 - **v0.4.0** tagged; `Action.tone` merged, unreleased
 - Contract stable in practice: six repos build against it, nothing
   exhaust-matches `kind`, fields are added optional
-- Docs refreshed from the code (#2): README, CLAUDE.md, module docs
+- Docs refreshed from the code (#2, again 2026-09-27)
+- Test container built and passing sc-build (#8); its first run on a
+  test machine waits on stormcentral#56
 - Open issues that matter: #4 (tone rendering — stormconsole's vmimages
   catalogue already sets `tone: "warn"` on its golden "Retry" action),
   #1 (TOTP login for every web UI)

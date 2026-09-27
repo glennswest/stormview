@@ -134,7 +134,7 @@ The JS side has the same two as `formatBytes` / `formatDuration`
 
 ## Who serves and renders it
 
-Checked against each repo's code on 2026-09-24.
+Checked against each repo's code on 2026-09-27.
 
 **Rust crate** (`stormview = { git = "https://github.com/glennswest/stormview", branch = "main" }`):
 
@@ -145,7 +145,23 @@ Checked against each repo's code on 2026-09-24.
 | **stormdrive** | Drives and shelves, with locate/fleet/test/designation actions; `GET /api/v1/components` + `/ws/components`. |
 | **stormstorage** | The federation — nodes, pools, distributed volumes with legs as relations; `GET /api/v1/components` + `/ws/components`. |
 | **stormipmi** | Its bare-metal hosts (`kind: baremetalhost`, power actions) on `GET /api/v1/components` (no websocket). |
-| **stormconsole** | Aggregates the stormd, stormdrive and stormstorage feeds (ids re-prefixed, actions proxied through the console) and serves the result on `GET /api/v1/components` + `/ws/components`. |
+| **stormconsole** | Aggregates feeds (ids re-prefixed, actions proxied through the console) and serves the result on `GET /api/v1/components` + `/ws/components`. Its stormdrive and stormstorage plugins read those daemons' feeds; its fleet plugin probes the node's port layout (below) and folds each stormd's feed in as `fleet:svc:<name>`, and fetches another node's feeds only when that node is opened. Other plugins (vmimages, …) build their own summaries. |
+
+### Where the feeds are on a stormcos node
+
+Every port below serves `GET /api/v1/components`. This is the layout
+stormconsole's fleet plugin probes (`crates/plugins/fleet/src/node.rs`
+`NODE_PORTS`, checked there against stormcos `deploy/build-goldens.sh`):
+
+| Port | Feed |
+|---|---|
+| 9080 | stormd (its own default, for a stormd outside stormcos) |
+| 9081–9085 | the control plane's stormd instances: fastetcd, kube-apiserver, kube-controller-manager, kube-scheduler, rustkube-node |
+| 9092 / 9093 / 9094 / 9097 | stormdrive / stormstorage / stormconsole / stormipmi |
+| service port + 100 | each service golden's stormd: 9192 stormdrive, 9193 stormstorage, 9194 stormconsole, 9195 stormvm, 9196 cadvisor, 9197 stormipmi, 9199 vmcloud-image-operator, 180 stormlb |
+
+stormblock (9090), stormvm (9095) and sbregistry (5100) serve no feed of
+their own; their stormd instances do.
 
 **npm package** (`"stormview": "github:glennswest/stormview#main"`):
 stormd's `web/` (the reference host app: routing, auth, stores, views),
@@ -313,9 +329,11 @@ and the suites' metadata.
 stormview runs nothing on a node, so what it tests there is the contract
 itself and the feeds built from it: the commit under test is checked in
 the pod, then used to read `GET /api/v1/components` (and
-`/ws/components`) from the node's daemons — stormd `:8269` (else `:9080`),
-stormdrive `:9092`, stormstorage `:9093`, stormipmi `:9097`, or
-`STORMVIEW_FEEDS=name=host:port,…`. It is read-only: no API, nothing
+`/ws/components`) from the node's daemons. The default list is
+stormd `:8269` (else `:9080`), stormdrive `:9092`, stormstorage `:9093` and
+stormipmi `:9097`, or `STORMVIEW_FEEDS=name=host:port,…` to replace it.
+That is narrower than the node's port layout above: the per-service stormd
+feeds and stormconsole are not read, and 8269 is not a feed port (#11). It is read-only: no API, nothing
 created, no action ever invoked; `requires: []`.
 
 | suite | what it checks |
@@ -348,3 +366,7 @@ What the contract or docs promise that the renderers don't do yet:
 - JS `formatDuration` prints negative durations where Rust clamps to
   `0s` — #5.
 - `HealthDot`'s glow uses hardcoded colours, not theme tokens — #6.
+- The test container reads 5 of a node's ~18 feed ports, one of which
+  (8269) is not in the layout — #11.
+- The test container has not yet passed a run on a test machine; runs
+  are blocked on stormcentral#56 — #8.

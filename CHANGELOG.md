@@ -50,6 +50,12 @@
 ## [Unreleased]
 
 ### 2026-09-27
+- **docs:** refreshed from the code since 2026-09-18 (`Action.tone`, the
+  test container). The consumer list was re-checked on 2026-09-27: stormconsole's fleet plugin now
+  reads node feeds. The README gains the stormcos feed port layout (from
+  stormconsole's `NODE_PORTS`), and the deck gains the test container, #9–#11
+  and status. Filed #11: the test container's default feed list doesn't
+  match that layout.
 - **test:** the stormcos test container (#8), per stormcentral
   `docs/test-standard.md`: `test/` is its own cargo workspace building one
   static `FROM scratch` image, `/test short|medium|long`. stormview runs

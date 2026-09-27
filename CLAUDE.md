@@ -32,6 +32,7 @@ shared by every storm daemon and web UI. Cross-project rules live in
 - `web/themes.css` — tokens, 12 themes, base control styles.
 - `web/utils.js` — JS formatting helpers and `ansiToHtml`.
 - `docs/presentation.md` — Marp slide deck (purpose and functionality).
+- Docs last refreshed from the code 2026-09-27.
 - `web/components/*.svelte` — DataGrid, ComponentCard, ComponentGrid,
   RelationPicker, HealthDot, LoginPanel.
 - `test/` — the stormcos test container (own cargo workspace; `build.sh`,
@@ -57,6 +58,9 @@ shared by every storm daemon and web UI. Cross-project rules live in
       test machine is up; close #8 on a passing run.
 
 ### Queued
+- #11 test: default feed list → the stormcos port layout (P1).
+- #10 Decide (owner): storage view — stormview reads storage.storm.io, or
+  a daemon serves it as a feed; #9 waits on it.
 - #4 ComponentCard ignores `Action.tone`; DataGrid renders only ok/warn.
 - #5 JS `formatDuration` doesn't clamp negatives like Rust.
 - #6 HealthDot glow colours hardcoded, not tokens.
