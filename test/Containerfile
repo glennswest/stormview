@@ -1,0 +1,14 @@
+# stormview-test — stormview's test image, per stormcentral
+# docs/test-standard.md (#8). One image for all three suites: the Job runs
+# `/test short|medium|long`.
+#
+# test/build.sh builds the static (musl) test binary on the build box and
+# stages it; this packages it. The build context is the repo root (the
+# standard's). The test reads the node's components feeds over plain HTTP
+# and uses no API, so it needs no trust store, no token, no tools and no
+# privileges: FROM scratch.
+FROM scratch
+ARG COMMIT=unknown
+LABEL storm.io/test-of="stormview" storm.io/test-commit="${COMMIT}"
+COPY test/.stage/stormview-test /test
+ENTRYPOINT ["/test"]

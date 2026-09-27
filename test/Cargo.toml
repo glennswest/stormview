@@ -1,0 +1,22 @@
+[package]
+name = "stormview-test"
+version = "0.1.0"
+edition = "2021"
+description = "stormview's test container: short, medium and long suites, per stormcentral docs/test-standard.md (#8)."
+license = "MIT"
+publish = false
+
+# Its own workspace: the crate's `cargo test` doesn't build it, and a daemon
+# that pins stormview by git never sees it as a member (stormcast's pattern).
+[workspace]
+
+# The contract of the commit under test, by path, and serde_json to read the
+# wire with it. HTTP and the websocket handshake are hand-rolled on std so the
+# binary stays small and static.
+[dependencies]
+stormview = { path = ".." }
+serde_json = "1"
+
+[[bin]]
+name = "stormview-test"
+path = "src/main.rs"

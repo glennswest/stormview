@@ -1,0 +1,68 @@
+# stormview-test — how stormcentral runs stormview's tests on a test machine,
+# per stormcentral docs/test-standard.md (#8). The runner builds the Job itself
+# (stormcentral src/testruns.rs `job_manifest`); this file records what the
+# suites need, and is the Job to apply by hand.
+#
+# stormview is a library with nothing of its own on the node. Its suites test
+# the contract of the commit under test in the pod, and read the components
+# feeds the node's daemons serve with it.
+#
+# Test metadata (what the runner matches against the machine):
+#   suites:   short (< 2 min), medium (< 30 min), long (the night window)
+#   requires: []            (no hardware)
+#   api:      none          (no ServiceAccount token is used; nothing is
+#                            created in the cluster)
+#   node:     read-only, plain HTTP GETs of /api/v1/components and
+#             /ws/components on STORM_NODE: stormd :8269 (else :9080),
+#             stormdrive :9092, stormstorage :9093, stormipmi :9097.
+#             A daemon not serving is skip; one behind a login (401/403) is
+#             skip; none answering at all is exit 2. No action a feed
+#             offers is ever invoked. STORMVIEW_FEEDS=name=host:port,…
+#             replaces the list.
+#   external: none
+#   resources: long sizes its waves from the pod's CPU quota (2 readers per
+#             CPU, 2..32, times 1-3 by wave) and memory limit (a quarter of
+#             it across the synthetic feeds)
+#   privileged: no
+#
+# The runner creates the namespace test-stormview-<suite>-<run id>, runs the
+# Job, collects the log (JSON lines, then a summary), and deletes the
+# namespace. Nothing is created outside the pod.
+---
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: stormview-test
+  namespace: ${NAMESPACE}
+  labels: { storm.io/test-run: "${RUN_ID}", storm.io/component: stormview, storm.io/suite: "${SUITE}" }
+spec:
+  backoffLimit: 0            # a retry would hide the finding
+  activeDeadlineSeconds: ${TIMEOUT_PLUS_MARGIN}
+  template:
+    metadata:
+      labels: { storm.io/test-run: "${RUN_ID}" }
+    spec:
+      restartPolicy: Never
+      automountServiceAccountToken: false
+      containers:
+        - name: test
+          image: ${IMAGE}
+          command: ["/test"]
+          args: ["${SUITE}"]
+          env:
+            - { name: STORM_NAMESPACE, value: "${NAMESPACE}" }
+            - { name: STORM_RUN_ID, value: "${RUN_ID}" }
+            - { name: STORM_NODE, value: "${NODE}" }
+            - { name: STORM_SUITE, value: "${SUITE}" }
+            - { name: STORM_TIMEOUT, value: "${TIMEOUT}" }
+            - { name: STORM_COMPONENT, value: stormview }
+            - { name: STORM_COMMIT, value: "${COMMIT}" }
+          volumeMounts:
+            - { name: results, mountPath: /results }
+          securityContext:
+            allowPrivilegeEscalation: false
+            runAsNonRoot: true
+            runAsUser: 65532
+            capabilities: { drop: ["ALL"] }
+      volumes:
+        - { name: results, emptyDir: {} }
