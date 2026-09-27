@@ -59,6 +59,11 @@ shared by every storm daemon and web UI. Cross-project rules live in
       and stormcentral#56 (`@@RESULT` quoting) is still open. Rerun
       `short` and `medium` once both are fixed; close #8 on a passing run.
 
+- Session state 2026-09-27 (before the restart): nothing in flight. Done
+  today: validated issues (#1 #4 #5 #6 #8 still real), mined comments (all
+  findings already filed), docs refreshed (a4b3884). Next: #8 rerun when
+  stormcentral#56 and stormcos#135 are fixed; else #11 (P1).
+
 ### Queued
 - #11 test: default feed list → the stormcos port layout (P1).
 - #10 Decide (owner): storage view — stormview reads storage.storm.io, or
