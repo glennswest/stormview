@@ -50,6 +50,13 @@
 ## [Unreleased]
 
 ### 2026-09-27
+- **docs:** README: the test container's environment table, from
+  `test/src/env.rs`. It covers the suite argument and `STORM_SUITE` (default `short`),
+  `STORM_NODE`, `STORMVIEW_FEEDS` (a repeated name adds a fallback),
+  `STORM_TIMEOUT` (120 / 1800 / 28800 s, and the long suite's wave length) and
+  `STORM_RESULTS` (`/results`), and notes which of the Job's variables are unread.
+  Everything else since 2026-09-18 was checked against `test/` and is
+  accurate. No new gaps: the open ones are #4, #5, #6 and #11.
 - **docs:** refreshed again from the code since 2026-09-18. README: the test
   container's exit codes (0 / 1 test failed / 2 infrastructure only) and summary
   line, and its sc-build command. README and deck: #8's machine run now also

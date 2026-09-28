@@ -342,6 +342,20 @@ created, no action ever invoked; `requires: []`.
 | `medium` | also: defaults, refusals (bad health / relation kind, missing fields), health order, builders, `format_duration`/`format_bytes` tables; per feed, integrity (unique ids, relation targets in the feed, methods, absolute action paths, tone vocabulary, hash links), exact read-back (no fields the contract doesn't know), and the first websocket snapshot matching `GET` |
 | `long` | waves until the window ends: readers at 2 per pod CPU (×1–3 by wave), half polling the node's feeds, half round-tripping a synthetic feed sized from the pod's memory; per wave p50/p95, errors, this process's RSS and open descriptors; `trend` fails on a wave slower than the first of its size, or residue that grows |
 
+What the container reads (`test/src/env.rs`; the runner sets the
+`STORM_*` values, per the test standard):
+
+| variable | default | use |
+|---|---|---|
+| suite (the first argument, else `STORM_SUITE`) | `short` | `short`, `medium` or `long` |
+| `STORM_NODE` | none | the node whose feeds are read; with neither it nor `STORMVIEW_FEEDS`, there are no feeds (exit 2) |
+| `STORMVIEW_FEEDS` | the list above | `name=host:port,…`; repeating a name adds a fallback address for it |
+| `STORM_TIMEOUT` (seconds) | 120 short, 1800 medium, 28800 long | the time budget; `long` runs waves until it ends, each 1/24 of it, clamped to 30 s–10 min |
+| `STORM_RESULTS` | `/results` | where `results.jsonl` is written |
+
+`STORM_NAMESPACE`, `STORM_RUN_ID`, `STORM_COMPONENT` and `STORM_COMMIT`
+are set in the Job but not read.
+
 A feed that isn't served is **skip**, and so is one behind a login
 (401/403: no credentials are handed in or baked in). If none answers at
 all, that is an infrastructure error. Results are JSON lines on stdout and
