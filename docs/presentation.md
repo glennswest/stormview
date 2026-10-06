@@ -180,7 +180,6 @@ the renderers.
   tones (today: card colours by action id, grid only `ok`/`warn`)
 - **#5** JS `formatDuration` clamps negatives like the Rust one
 - **#6** HealthDot's glow from theme tokens instead of fixed colours
-- **#11** test container reads the whole stormcos feed port layout
 - **#9 / #10** a storage view: decide whether stormview reads
   `storage.storm.io` or a daemon serves it as a feed
 
@@ -192,9 +191,9 @@ the renderers.
 - Contract stable in practice: six repos build against it, nothing
   exhaust-matches `kind`, fields are added optional
 - Docs refreshed from the code (#2, again 2026-09-27)
-- Test container built and passing sc-build (#8); its first run on a
-  test machine waits on stormcentral#56 and stormcos#135 (the node's
-  sbregistry)
+- Test container built and passing sc-build (#8); it reads every port of
+  the stormcos feed layout (`NODE_FEEDS`, #11); its first run on a test
+  machine waits on stormcos#135 (the node's sbregistry)
 - Open issues that matter: #4 (tone rendering — stormconsole's vmimages
   catalogue already sets `tone: "warn"` on its golden "Retry" action),
   #1 (TOTP login for every web UI)

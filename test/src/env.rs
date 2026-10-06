@@ -4,6 +4,8 @@
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
+use stormview::NODE_FEEDS;
+
 /// One daemon that may serve a components feed, and the `host:port`s to try
 /// for it, first that answers wins.
 #[derive(Clone, Debug, PartialEq)]
@@ -11,16 +13,6 @@ pub struct FeedAddr {
     pub name: String,
     pub candidates: Vec<String>,
 }
-
-/// The storm daemons that serve `GET /api/v1/components`, and the ports they
-/// listen on by default. stormd is on 8269 on a stormcos node and 9080 by its
-/// own default.
-const DAEMONS: &[(&str, &[u16])] = &[
-    ("stormd", &[8269, 9080]),
-    ("stormdrive", &[9092]),
-    ("stormstorage", &[9093]),
-    ("stormipmi", &[9097]),
-];
 
 pub struct Env {
     pub suite: String,
@@ -75,14 +67,13 @@ pub fn join(host: &str, port: u16) -> String {
     }
 }
 
+/// Every feed port of the stormcos node layout (`stormview::NODE_FEEDS`),
+/// one feed each. A port that answers nothing is skipped by the suites.
 pub fn default_feeds(node: &str) -> Vec<FeedAddr> {
     if node.is_empty() {
         return Vec::new();
     }
-    DAEMONS
-        .iter()
-        .map(|(name, ports)| FeedAddr { name: name.to_string(), candidates: ports.iter().map(|p| join(node, *p)).collect() })
-        .collect()
+    NODE_FEEDS.iter().map(|f| FeedAddr { name: f.name(), candidates: vec![join(node, f.port)] }).collect()
 }
 
 /// `STORMVIEW_FEEDS=name=host:port,name=host:port` — for a hand run, or a
@@ -106,9 +97,11 @@ mod tests {
     #[test]
     fn defaults_follow_the_node() {
         let f = default_feeds("10.0.0.5");
-        assert_eq!(f[0].candidates, ["10.0.0.5:8269", "10.0.0.5:9080"]);
-        assert_eq!(f.len(), DAEMONS.len());
-        assert_eq!(default_feeds("fd00::5")[1].candidates, ["[fd00::5]:9092"]);
+        assert_eq!(f.len(), NODE_FEEDS.len());
+        assert_eq!(f[0], FeedAddr { name: "stormd".into(), candidates: vec!["10.0.0.5:9080".into()] });
+        let drive = |f: &[FeedAddr]| f.iter().find(|a| a.name == "stormdrive.stormd").unwrap().candidates.clone();
+        assert_eq!(drive(&f), ["10.0.0.5:9192"]);
+        assert_eq!(drive(&default_feeds("fd00::5")), ["[fd00::5]:9192"]);
         assert!(default_feeds("").is_empty());
     }
 

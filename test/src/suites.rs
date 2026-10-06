@@ -19,9 +19,24 @@ pub fn probe_all(env: &Env, r: &mut Report) -> Vec<Feed> {
     let mut found = Vec::new();
     let mut answered = 0;
     let mut absent = Vec::new();
-    for f in &env.feeds {
-        let t = Instant::now();
-        let (outcome, feed) = match feeds::probe(f, T) {
+    // All at once: a node that drops rather than refuses would otherwise
+    // cost T per silent port, and the layout has two dozen.
+    let probes: Vec<(Probe, u128)> = std::thread::scope(|s| {
+        let handles: Vec<_> = env
+            .feeds
+            .iter()
+            .map(|f| {
+                s.spawn(move || {
+                    let t = Instant::now();
+                    let p = feeds::probe(f, T);
+                    (p, t.elapsed().as_millis())
+                })
+            })
+            .collect();
+        handles.into_iter().map(|h| h.join().expect("probe thread")).collect()
+    });
+    for (f, (probe, ms)) in env.feeds.iter().zip(probes) {
+        let (outcome, feed) = match probe {
             Probe::Found(feed) => {
                 answered += 1;
                 let d = format!("{} summaries from {}{} read with this commit's contract", feed.summaries.len(), feed.addr, feeds::PATH);
@@ -40,7 +55,7 @@ pub fn probe_all(env: &Env, r: &mut Report) -> Vec<Feed> {
                 (Outcome::Skip(format!("not served on this node ({d})")), None)
             }
         };
-        r.record(&format!("feed:{}", f.name), outcome, t.elapsed().as_millis(), None);
+        r.record(&format!("feed:{}", f.name), outcome, ms, None);
         found.extend(feed);
     }
     if answered == 0 {

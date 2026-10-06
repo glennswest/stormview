@@ -49,6 +49,19 @@
 
 ## [Unreleased]
 
+### 2026-10-06
+- **feat:** `NODE_FEEDS` / `NodeFeed`: every port a stormcos node serves
+  `GET /api/v1/components` on (25: stormd 9080, the control plane's stormds
+  9081–9085, the services, each service golden's stormd on its port + 100,
+  incl. stormimds 8269, stormrdp 9201, stormcluster 9202), one shared list
+  for every reader (#11).
+- **fix:** test container: the default feed list is `NODE_FEEDS`, one
+  `feed:<name>` result per port, probed in parallel. It read five ports, one
+  wrongly labelled (8269 as stormd), and never the per-service stormds or
+  stormconsole (#11).
+- **docs:** README layout table adds 8269, 9201, 9202 and the registry
+  goldens' stormds (#16); stormcentral#56 no longer listed as a blocker.
+
 ### 2026-09-27
 - **docs:** README: the test container's environment table, from
   `test/src/env.rs`. It covers the suite argument and `STORM_SUITE` (default `short`),

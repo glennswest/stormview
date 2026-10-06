@@ -149,16 +149,22 @@ Checked against each repo's code on 2026-09-27.
 
 ### Where the feeds are on a stormcos node
 
-Every port below serves `GET /api/v1/components`. This is the layout
-stormconsole's fleet plugin probes (`crates/plugins/fleet/src/node.rs`
-`NODE_PORTS`, checked there against stormcos `deploy/build-goldens.sh`):
+Every port below serves `GET /api/v1/components`. The crate carries this
+layout as `stormview::NODE_FEEDS` (a `NodeFeed` per port: `port`,
+`service`, `stormd`, and `name()` — `stormdrive`, `stormdrive.stormd`), so
+every reader probes the same list. It comes from stormcos
+`deploy/build-goldens.sh` (`service_golden` puts each service's stormd on
+its port + 100) and, for goldens that script doesn't build, the component
+registry; stormconsole's fleet plugin keeps its own copy today
+(`crates/plugins/fleet/src/node.rs` `NODE_PORTS`):
 
 | Port | Feed |
 |---|---|
 | 9080 | stormd (its own default, for a stormd outside stormcos) |
 | 9081–9085 | the control plane's stormd instances: fastetcd, kube-apiserver, kube-controller-manager, kube-scheduler, rustkube-node |
 | 9092 / 9093 / 9094 / 9097 | stormdrive / stormstorage / stormconsole / stormipmi |
-| service port + 100 | each service golden's stormd: 9192 stormdrive, 9193 stormstorage, 9194 stormconsole, 9195 stormvm, 9196 cadvisor, 9197 stormipmi, 9199 vmcloud-image-operator, 180 stormlb |
+| service port + 100 | each service golden's stormd: 9192 stormdrive, 9193 stormstorage, 9194 stormconsole, 9195 stormvm, 9196 cadvisor, 9197 stormipmi, 9199 vmcloud-image-operator, 9201 stormrdp, 9202 stormcluster, 180 stormlb, 8269 stormimds |
+| registry goldens' stormd | 9188 stormupdate, 9198 nfsop, 8180 nextnfs, 8545 minismbd |
 
 stormblock (9090), stormvm (9095) and sbregistry (5100) serve no feed of
 their own; their stormd instances do.
@@ -329,11 +335,10 @@ and the suites' metadata.
 stormview runs nothing on a node, so what it tests there is the contract
 itself and the feeds built from it: the commit under test is checked in
 the pod, then used to read `GET /api/v1/components` (and
-`/ws/components`) from the node's daemons. The default list is
-stormd `:8269` (else `:9080`), stormdrive `:9092`, stormstorage `:9093` and
-stormipmi `:9097`, or `STORMVIEW_FEEDS=name=host:port,…` to replace it.
-That is narrower than the node's port layout above: the per-service stormd
-feeds and stormconsole are not read, and 8269 is not a feed port (#11). It is read-only: no API, nothing
+`/ws/components`) from the node's daemons. The default list is every
+port of the layout above (`NODE_FEEDS`, one `feed:<name>` result each,
+probed in parallel), or `STORMVIEW_FEEDS=name=host:port,…` to replace it.
+It is read-only: no API, nothing
 created, no action ever invoked; `requires: []`.
 
 | suite | what it checks |
@@ -389,9 +394,7 @@ What the contract or docs promise that the renderers don't do yet:
 - JS `formatDuration` prints negative durations where Rust clamps to
   `0s` — #5.
 - `HealthDot`'s glow uses hardcoded colours, not theme tokens — #6.
-- The test container reads 5 of a node's ~18 feed ports, one of which
-  (8269) is not in the layout — #11.
 - The test container has not yet passed a run on a test machine. Runs
-  are blocked on stormcentral#56 (`@@RESULT` quoting) and, on C2NR0Q2
-  (11.50), on the node's sbregistry not listening on :5100
-  (stormcos#135) — #8.
+  on C2NR0Q2 (11.50) are blocked on the node's sbregistry not listening
+  on :5100 (stormcos#135) — #8. (stormcentral#56, `@@RESULT` quoting,
+  closed 2026-09-28.)

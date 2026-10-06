@@ -180,6 +180,77 @@ pub struct ComponentSummary {
     pub link: Option<String>,
 }
 
+// --- Where the feeds are on a stormcos node ---
+
+/// One port on a stormcos node that serves `GET /api/v1/components`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+pub struct NodeFeed {
+    pub port: u16,
+    /// The daemon the layout puts there; with `stormd`, the service whose
+    /// golden that stormd supervises.
+    pub service: &'static str,
+    /// The feed is served by the service golden's own stormd (its API on the
+    /// service port + 100, or the control plane's 9081–9085), not by the
+    /// service itself.
+    pub stormd: bool,
+}
+
+impl NodeFeed {
+    /// A short name for the feed, safe in a test or metric name:
+    /// `stormdrive`, `stormdrive.stormd`; the node's own stormd is `stormd`.
+    pub fn name(&self) -> String {
+        if self.stormd {
+            format!("{}.stormd", self.service)
+        } else {
+            self.service.to_string()
+        }
+    }
+}
+
+const fn svc(port: u16, service: &'static str) -> NodeFeed {
+    NodeFeed { port, service, stormd: false }
+}
+
+const fn sd(port: u16, service: &'static str) -> NodeFeed {
+    NodeFeed { port, service, stormd: true }
+}
+
+/// Every port a stormcos node serves a components feed on, so the readers
+/// (stormconsole's fleet view, stormview's test container) share one list.
+/// From stormcos `deploy/build-goldens.sh` (`service_golden` puts each
+/// service's stormd on its port + 100; the control plane's stormds are
+/// 9081–9085) and the component registry for the goldens it doesn't build
+/// (stormupdate, nfsop, nextnfs, minismbd). A worker runs fewer of these than
+/// a control-plane node: a port that answers nothing is absent, not broken.
+/// stormblock (9090), stormvm (9095) and sbregistry (5100) serve no feed.
+pub const NODE_FEEDS: &[NodeFeed] = &[
+    svc(9080, "stormd"),
+    sd(9081, "fastetcd"),
+    sd(9082, "kube-apiserver"),
+    sd(9083, "kube-controller-manager"),
+    sd(9084, "kube-scheduler"),
+    sd(9085, "rustkube-node"),
+    svc(9092, "stormdrive"),
+    svc(9093, "stormstorage"),
+    svc(9094, "stormconsole"),
+    svc(9097, "stormipmi"),
+    sd(180, "stormlb"),
+    sd(8180, "nextnfs"),
+    sd(8269, "stormimds"),
+    sd(8545, "minismbd"),
+    sd(9188, "stormupdate"),
+    sd(9192, "stormdrive"),
+    sd(9193, "stormstorage"),
+    sd(9194, "stormconsole"),
+    sd(9195, "stormvm"),
+    sd(9196, "cadvisor"),
+    sd(9197, "stormipmi"),
+    sd(9198, "nfsop"),
+    sd(9199, "vmcloud-image-operator"),
+    sd(9201, "stormrdp"),
+    sd(9202, "stormcluster"),
+];
+
 // --- Shared formatting, so every UI prints the same numbers the same way ---
 
 /// Two largest units: `42s`, `1m 30s`, `1h 1m`, `1d 1h`. Negatives clamp to `0s`.
@@ -263,5 +334,27 @@ mod tests {
         let json = serde_json::to_string(&c).unwrap();
         let back: ComponentSummary = serde_json::from_str(&json).unwrap();
         assert_eq!(c, back);
+    }
+
+    #[test]
+    fn node_feeds_are_distinct_and_feed_ports_only() {
+        let mut ports: Vec<u16> = NODE_FEEDS.iter().map(|f| f.port).collect();
+        ports.sort_unstable();
+        ports.dedup();
+        assert_eq!(ports.len(), NODE_FEEDS.len(), "duplicate port");
+        let mut names: Vec<String> = NODE_FEEDS.iter().map(NodeFeed::name).collect();
+        names.sort();
+        names.dedup();
+        assert_eq!(names.len(), NODE_FEEDS.len(), "duplicate name");
+        for p in [9090u16, 9095, 5100] {
+            assert!(NODE_FEEDS.iter().all(|f| f.port != p), "{p} serves no feed");
+        }
+        // A service golden's stormd is its port + 100.
+        for (svc_port, name) in [(9092, "stormdrive"), (9093, "stormstorage"), (9094, "stormconsole"), (9097, "stormipmi")] {
+            let f = NODE_FEEDS.iter().find(|f| f.port == svc_port + 100).unwrap();
+            assert_eq!((f.service, f.stormd), (name, true));
+        }
+        assert_eq!(NODE_FEEDS[0].name(), "stormd");
+        assert_eq!(NODE_FEEDS.iter().find(|f| f.port == 8269).unwrap().name(), "stormimds.stormd");
     }
 }

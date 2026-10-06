@@ -13,8 +13,8 @@
 #   api:      none          (no ServiceAccount token is used; nothing is
 #                            created in the cluster)
 #   node:     read-only, plain HTTP GETs of /api/v1/components and
-#             /ws/components on STORM_NODE: stormd :8269 (else :9080),
-#             stormdrive :9092, stormstorage :9093, stormipmi :9097.
+#             /ws/components on STORM_NODE, on every port of the stormcos
+#             node feed layout (stormview::NODE_FEEDS, probed in parallel).
 #             A daemon not serving is skip; one behind a login (401/403) is
 #             skip; none answering at all is exit 2. No action a feed
 #             offers is ever invoked. STORMVIEW_FEEDS=name=host:port,…
