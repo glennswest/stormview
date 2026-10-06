@@ -57,12 +57,11 @@ shared by every storm daemon and web UI. Cross-project rules live in
 - [x] #1 LoginPanel authenticator step + enrolment (`oncode(code, step)`);
       `web/test/check.sh` compiles every component and drives LoginPanel
       under jsdom (21 checks, sc-build passed). stormcentral#123 adopts it.
+- [x] #4 action tones on ComponentCard + DataGrid via `actionTone(a)`
+      (utils.js); id fallback on the card only; `button.accent`/`.muted`
+      in themes.css; 16 tone checks in web/test/check.mjs (1c2bc79).
 
 ### In progress
-- [ ] #4 action tones: `actionTone(a)` in utils.js (danger, then
-      ok|warn|accent|muted); ComponentCard falls back to the id heuristic
-      only without a tone; DataGrid uses it; `button.accent`/`button.muted`
-      in themes.css; web/test/check.mjs covers both renderers.
 - [ ] #8 test container — built (`test/`, 4c4320f): 14 unit tests and
       the static musl `test/build.sh` pass on sc-build. **Left:** a real
       `stormcentral test run stormview short|medium` on a test machine.
@@ -74,7 +73,7 @@ shared by every storm daemon and web UI. Cross-project rules live in
       stormcos#135 is fixed; close #8 on a passing run.
 
 - Session state 2026-10-06: #11 done and released (v0.5.0). Next: #8
-  rerun when stormcos#135 is fixed; else #4 (P2). #1 done (unreleased).
+  rerun when stormcos#135 is fixed; #1 and #4 done (unreleased); next #5/#6 (P3).
 
 ### Queued
 - #10 Decide (owner): storage view — stormview reads storage.storm.io, or
