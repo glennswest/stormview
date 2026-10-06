@@ -59,6 +59,10 @@ shared by every storm daemon and web UI. Cross-project rules live in
       under jsdom (21 checks, sc-build passed). stormcentral#123 adopts it.
 
 ### In progress
+- [ ] #4 action tones: `actionTone(a)` in utils.js (danger, then
+      ok|warn|accent|muted); ComponentCard falls back to the id heuristic
+      only without a tone; DataGrid uses it; `button.accent`/`button.muted`
+      in themes.css; web/test/check.mjs covers both renderers.
 - [ ] #8 test container — built (`test/`, 4c4320f): 14 unit tests and
       the static musl `test/build.sh` pass on sc-build. **Left:** a real
       `stormcentral test run stormview short|medium` on a test machine.
@@ -77,6 +81,5 @@ shared by every storm daemon and web UI. Cross-project rules live in
   a daemon serves it as a feed; #9 waits on it. 2026-10-06: both labelled
   `needs-owner`, #9 parked with `stormcentral wait-owner`; option 1 also
   waits on rustkube#83 (open). Do not start #9 until #10 is answered.
-- #4 ComponentCard ignores `Action.tone`; DataGrid renders only ok/warn.
 - #5 JS `formatDuration` doesn't clamp negatives like Rust.
 - #6 HealthDot glow colours hardcoded, not tokens.
