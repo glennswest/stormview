@@ -74,7 +74,9 @@ shared by every storm daemon and web UI. Cross-project rules live in
 
 ### Queued
 - #10 Decide (owner): storage view — stormview reads storage.storm.io, or
-  a daemon serves it as a feed; #9 waits on it.
+  a daemon serves it as a feed; #9 waits on it. 2026-10-06: both labelled
+  `needs-owner`, #9 parked with `stormcentral wait-owner`; option 1 also
+  waits on rustkube#83 (open). Do not start #9 until #10 is answered.
 - #4 ComponentCard ignores `Action.tone`; DataGrid renders only ok/warn.
 - #5 JS `formatDuration` doesn't clamp negatives like Rust.
 - #6 HealthDot glow colours hardcoded, not tokens.
