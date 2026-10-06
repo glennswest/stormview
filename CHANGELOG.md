@@ -1,5 +1,14 @@
 # Changelog
 
+## [Unreleased]
+
+### 2026-10-06
+- **feat:** `LoginPanel` has an optional authenticator (TOTP) step and
+  first-time enrolment: `onsubmit` may resolve to `{ step: 'totp' }` or
+  `{ step: 'enroll', qr, secret }`, the code goes to the new
+  `oncode(code, step)` prop; 6-digit auto-submit, QR with a show-the-key
+  toggle, `← back`, and `restart: true` errors return to the password step (#1).
+
 ## [v0.5.0] — 2026-10-06
 
 ### Added

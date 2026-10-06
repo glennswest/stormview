@@ -299,8 +299,32 @@ pulses.
 `title = 'storm'`, `subtitle = 'sign in to continue'`,
 `askUsername = true` (false ⇒ password-only form), and
 `onsubmit(username, password)` — async; a thrown error's `message` shows
-inline, the password clears, the panel shakes. There is no TOTP step yet
-(#1).
+inline, the password clears, the panel shakes.
+
+An optional authenticator step follows when `onsubmit` resolves to
+`{ step: 'totp' }` or `{ step: 'enroll', qr, secret }` (`qr` an image URL,
+typically a `data:` URI; `secret` the base32 key). The panel then asks for a
+6-digit code — digits only, auto-submitted at six — and for enrolment shows
+the QR image with a "can't scan? show the key" toggle (the key grouped in
+fours). The code goes to the `oncode(code, step)` prop (async, `step` is
+`'totp'` or `'enroll'`), with the same inline error, shake and busy
+behaviour; a thrown error with `restart: true` (say, an expired ticket)
+returns to the password step after 1.5 s. `← back` returns to it at once.
+Any other resolved value from `onsubmit` leaves the panel as it is (the host
+has signed in and moves on). The host keeps its own ticket between the
+steps:
+
+```svelte
+<LoginPanel
+  title="stormcentral"
+  onsubmit={async (username, password) => {
+    const r = await api('/api/v1/auth/login', { method: 'POST', body: { username, password } })
+    ticket = r.ticket
+    return r // { step: 'totp' } | { step: 'enroll', qr, secret }
+  }}
+  oncode={async (code, step) => signedIn(await api(`/api/v1/auth/${step}`, { method: 'POST', body: { ticket, code } }))}
+/>
+```
 
 ### JS helpers — `stormview/utils`
 

@@ -127,7 +127,8 @@ the renderers.
   `belongs_to` in feed, nests along `has_one`/`has_many` (cycle-safe),
   bulk start/stop/restart over a multi-selection
 - **RelationPicker**, **HealthDot**, **LoginPanel** (user + password or
-  password-only, inline error)
+  password-only, inline error; optional authenticator code step and
+  first-time enrolment with QR)
 - App-agnostic: no router, no API client — hosts pass `resolve` / `invoke`
 
 ---
@@ -175,7 +176,6 @@ the renderers.
 
 ## Planned (not in the code yet)
 
-- **#1** LoginPanel: authenticator (TOTP) step and first-time enrolment
 - **#4** ComponentCard honours `Action.tone`; DataGrid renders all four
   tones (today: card colours by action id, grid only `ok`/`warn`)
 - **#5** JS `formatDuration` clamps negatives like the Rust one
@@ -195,5 +195,6 @@ the renderers.
   the stormcos feed layout (`NODE_FEEDS`, #11); its first run on a test
   machine waits on stormcos#135 (the node's sbregistry)
 - Open issues that matter: #4 (tone rendering — stormconsole's vmimages
-  catalogue already sets `tone: "warn"` on its golden "Retry" action),
-  #1 (TOTP login for every web UI)
+  catalogue already sets `tone: "warn"` on its golden "Retry" action)
+- LoginPanel's authenticator step landed (#1, unreleased); stormcentral
+  moves its own copy back to it (stormcentral#123)
