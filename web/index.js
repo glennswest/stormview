@@ -13,4 +13,5 @@ export {
   timeAgo,
   escapeHtml,
   ansiToHtml,
+  actionTone,
 } from './utils.js'

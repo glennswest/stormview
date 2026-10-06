@@ -1,7 +1,7 @@
 // Compiles every component, then mounts LoginPanel in jsdom and walks its
 // password, enrol and totp steps. Run by check.sh (needs svelte + jsdom
 // installed next to it, and node --conditions=browser).
-import { readdirSync, readFileSync, writeFileSync } from 'node:fs'
+import { copyFileSync, readdirSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { pathToFileURL } from 'node:url'
 import { JSDOM } from 'jsdom'
@@ -25,8 +25,13 @@ for (const f of readdirSync(dir).filter((f) => f.endsWith('.svelte'))) {
   }
   for (const w of res.warnings) console.log(`warn  ${f}: ${w.code} ${w.message.split('\n')[0]}`)
   ok(true, `compile ${f}`)
-  writeFileSync(f.replace(/\.svelte$/, '.js'), res.js.code)
+  // flat beside each other here: ./X.svelte → ./X.js, ../utils.js → ./utils.js
+  const code = res.js.code
+    .replace(/from '\.\/(\w+)\.svelte'/g, "from './$1.js'")
+    .replace(/from '\.\.\/utils\.js'/g, "from './utils.js'")
+  writeFileSync(f.replace(/\.svelte$/, '.js'), code)
 }
+copyFileSync(join(dir, '..', 'utils.js'), 'utils.js')
 
 // --- LoginPanel, driven ---------------------------------------------------
 const dom = new JSDOM('<!doctype html><body></body>', { pretendToBeVisual: true })
@@ -39,7 +44,11 @@ for (const k of Object.getOwnPropertyNames(dom.window)) {
   } catch {}
 }
 const { mount, unmount, flushSync } = await import('svelte')
-const LoginPanel = (await import(pathToFileURL(join(process.cwd(), 'LoginPanel.js')).href)).default
+const load = async (f) => import(pathToFileURL(join(process.cwd(), f)).href)
+const LoginPanel = (await load('LoginPanel.js')).default
+const ComponentCard = (await load('ComponentCard.js')).default
+const DataGridC = (await load('DataGrid.js')).default
+const { actionTone } = await load('utils.js')
 
 const settle = async (ms = 0) => {
   await new Promise((r) => setTimeout(r, ms))
@@ -55,9 +64,9 @@ const type = (el, v) => {
 const submit = () => $('form').dispatchEvent(new dom.window.Event('submit', { cancelable: true, bubbles: true }))
 const text = (s) => $(s)?.textContent.trim()
 
-async function run(props) {
+async function run(props, Component = LoginPanel) {
   const target = document.body.appendChild(document.createElement('div'))
-  const app = mount(LoginPanel, { target, props })
+  const app = mount(Component, { target, props })
   flushSync()
   return () => {
     unmount(app)
@@ -156,6 +165,42 @@ async function run(props) {
   type($('input.code'), '654321')
   await settle()
   ok(codes.length === 1 && codes[0][0] === '654321' && codes[0][1] === 'totp', 'oncode(code, "totp")')
+  done()
+}
+
+// --- action tones (#4) ------------------------------------------------------
+const act = (id, extra = {}) => ({ id, label: id, method: 'POST', path: `/api/v1/x/${id}`, enabled: true, danger: false, ...extra })
+const toned = [
+  act('golden', { tone: 'ok' }),
+  act('retry', { tone: 'warn' }),
+  act('open', { tone: 'accent' }),
+  act('rebuild', { tone: 'muted' }),
+  act('stop', { danger: true, tone: 'ok' }),
+  act('weird', { tone: 'purple' }),
+  act('start'),
+  act('restart'),
+  act('start2', { id: 'start', label: 'start2', tone: 'muted' }),
+]
+const want = { golden: 'ok', retry: 'warn', open: 'accent', rebuild: 'muted', stop: 'danger', weird: '' }
+
+ok(actionTone({ tone: 'accent' }) === 'accent' && actionTone({ danger: true, tone: 'ok' }) === 'danger'
+  && actionTone({ tone: 'nope' }) === '' && actionTone(undefined) === '', 'actionTone: danger wins, unknown tones are plain')
+
+const btnClass = (label) => {
+  const b = $$('button').find((b) => b.textContent.trim() === label)
+  return b ? [...b.classList].filter((c) => !c.startsWith('svelte-')).join(' ') : '(missing)'
+}
+{
+  const done = await run({ component: { id: 'c1', kind: 'process', label: 'c1', health: 'ok', actions: toned } }, ComponentCard)
+  for (const [label, cls] of Object.entries(want)) ok(btnClass(label) === cls, `ComponentCard: ${label} → '${cls}' (got '${btnClass(label)}')`)
+  ok(btnClass('start') === 'ok' && btnClass('restart') === 'warn', 'ComponentCard: no tone falls back to the id (start → ok, restart → warn)')
+  ok(btnClass('start2') === 'muted', 'ComponentCard: a tone beats the id fallback')
+  done()
+}
+{
+  const done = await run({ columns: [{ key: 'actions', label: '', render: 'actions' }], rows: [{ id: 'r1', actions: toned }] }, DataGridC)
+  for (const [label, cls] of Object.entries(want)) ok(btnClass(label) === cls, `DataGrid: ${label} → '${cls}' (got '${btnClass(label)}')`)
+  ok(btnClass('start') === '', 'DataGrid: no id fallback (as before)')
   done()
 }
 

@@ -177,8 +177,6 @@ the renderers.
 
 ## Planned (not in the code yet)
 
-- **#4** ComponentCard honours `Action.tone`; DataGrid renders all four
-  tones (today: card colours by action id, grid only `ok`/`warn`)
 - **#5** JS `formatDuration` clamps negatives like the Rust one
 - **#6** HealthDot's glow from theme tokens instead of fixed colours
 - **#9 / #10** a storage view: decide whether stormview reads
@@ -195,7 +193,8 @@ the renderers.
 - Test container built and passing sc-build (#8); it reads every port of
   the stormcos feed layout (`NODE_FEEDS`, #11); its first run on a test
   machine waits on stormcos#135 (the node's sbregistry)
-- Open issues that matter: #4 (tone rendering — stormconsole's vmimages
-  catalogue already sets `tone: "warn"` on its golden "Retry" action)
+- Action tones render everywhere (#4, unreleased): ComponentCard and
+  DataGrid paint `ok | warn | accent | muted`; stormconsole's vmimages
+  "Retry" (`tone: "warn"`) now reads as one on a card too
 - LoginPanel's authenticator step landed (#1, unreleased); stormcentral
   moves its own copy back to it (stormcentral#123)

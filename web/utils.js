@@ -104,3 +104,12 @@ export function ansiToHtml(text) {
   while (openSpans > 0) { result += '</span>'; openSpans-- }
   return result
 }
+
+// The class an Action's button wears: 'danger' wins (it also gates a
+// confirm), then the action's tone if it is one renderers know
+// (ok | warn | accent | muted); '' otherwise. themes.css styles each.
+const ACTION_TONES = new Set(['ok', 'warn', 'accent', 'muted'])
+export function actionTone(action) {
+  if (action?.danger) return 'danger'
+  return ACTION_TONES.has(action?.tone) ? action.tone : ''
+}

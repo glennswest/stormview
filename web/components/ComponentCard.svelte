@@ -5,6 +5,7 @@
   // action's own method+path). Links are plain hash hrefs.
   import HealthDot from './HealthDot.svelte'
   import RelationPicker from './RelationPicker.svelte'
+  import { actionTone } from '../utils.js'
 
   let {
     component,
@@ -57,6 +58,12 @@
     } finally {
       busy = false
     }
+  }
+
+  // Feeds that predate Action.tone still get a coloured start/restart.
+  const idTones = { start: 'ok', restart: 'warn' }
+  function actionClass(a) {
+    return actionTone(a) || idTones[a.id] || ''
   }
 
   function toneClass(tone) {
@@ -112,9 +119,7 @@
     <div class="actions">
       {#each component.actions as a}
         <button
-          class:ok={a.id === 'start'}
-          class:danger={a.danger}
-          class:warn={a.id === 'restart'}
+          class={actionClass(a)}
           disabled={!a.enabled || busy}
           onclick={() => run(a)}>{a.label}</button
         >

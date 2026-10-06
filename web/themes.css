@@ -652,6 +652,15 @@ button.warn { background: var(--warn-bg); border-color: var(--warn-border); colo
 button.ok:hover:not(:disabled) { background: var(--ok-bg); filter: brightness(1.2); }
 button.danger:hover:not(:disabled) { background: var(--error-bg); filter: brightness(1.2); }
 button.warn:hover:not(:disabled) { background: var(--warn-bg); filter: brightness(1.2); }
+button.accent {
+  background: var(--accent-bg);
+  border-color: color-mix(in srgb, var(--accent) 45%, var(--border));
+  color: var(--accent);
+}
+button.accent:hover:not(:disabled) { background: var(--accent-bg); filter: brightness(1.2); }
+/* muted: present but quiet — reads as "already done" or "rarely needed" */
+button.muted { background: transparent; border-color: var(--border); color: var(--text-dim); }
+button.muted:hover:not(:disabled) { background: var(--panel-raised); color: var(--text); }
 
 /* the terminal/log pane */
 .term-output {

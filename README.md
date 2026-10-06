@@ -97,8 +97,9 @@ button with no per-kind knowledge.
 - `tone` (`ok | warn | accent | muted`, optional, omitted when absent) says
   what the control *means* — e.g. a "Make golden" button that already has
   a golden. It is a suggestion about appearance only. Builder:
-  `action.tone("ok")`. Renderer support is partial today, see
-  [Known gaps](#known-gaps).
+  `action.tone("ok")`. ComponentCard and DataGrid paint all four (the
+  `button.<tone>` styles in `themes.css`); `danger` wins over a tone, and an
+  unknown tone renders as a plain button.
 
 There is no `Action::new`; build the struct literally.
 
@@ -255,13 +256,16 @@ the server's configured default, which beats `storm`.
 | `onrowclick` | `null` | `(row)` |
 
 Columns sort on header click (toggle direction) unless `sortable: false`.
-Action buttons honour `enabled`, `danger`, and `tone` `ok`/`warn`.
+Action buttons honour `enabled`, `danger`, and every `tone`
+(`ok | warn | accent | muted`).
 DataGrid does not confirm `danger` actions itself — `onaction` decides.
 
 **`ComponentCard`** — one `ComponentSummary` as a card: health dot, a kind
 icon (known kinds: system, process, plugin, cron, storage, logs, updater;
 anything else gets `•`), label (linked when `link` is set), detail,
-metrics with tone colours, relations, actions.
+metrics with tone colours, relations, actions. Action buttons take their
+colour from `danger`, else `tone`; an action without a tone falls back to
+its id (`start` → ok, `restart` → warn), for feeds that predate `tone`.
 
 | Prop | Default | |
 |---|---|---|
@@ -332,7 +336,10 @@ steps:
 `3d ago`), `escapeHtml(s)`, and `ansiToHtml(text)` — SGR bold, dim, italic,
 underline and the 16 foreground colours, coloured through the theme's
 `--ansi-*` tokens so output re-colours with the theme; cursor-movement
-escapes are stripped and all text is HTML-escaped.
+escapes are stripped and all text is HTML-escaped. `actionTone(action)`
+gives the class an action's button wears: `'danger'` when `danger`, else
+its `tone` if it is one of `ok | warn | accent | muted`, else `''` — so a
+host rendering its own buttons colours them the way the components do.
 
 ## Building and testing
 
@@ -416,8 +423,6 @@ golden. Releases here are tags (`vX.Y.Z`) with matching `Cargo.toml` and
 
 What the contract or docs promise that the renderers don't do yet:
 
-- `ComponentCard` ignores `Action.tone` (colours by action id), and
-  `DataGrid` renders only the `ok`/`warn` tones — #4.
 - JS `formatDuration` prints negative durations where Rust clamps to
   `0s` — #5.
 - `HealthDot`'s glow uses hardcoded colours, not theme tokens — #6.

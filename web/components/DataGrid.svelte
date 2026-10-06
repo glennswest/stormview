@@ -14,6 +14,7 @@
   //   onrowclick:  (row)
   import HealthDot from './HealthDot.svelte'
   import DataGrid from './DataGrid.svelte'
+  import { actionTone } from '../utils.js'
 
   let {
     columns = [],
@@ -157,9 +158,7 @@
                 <span class="actions-cell" onclick={(e) => e.stopPropagation()}>
                   {#each v || [] as a}
                     <button
-                      class:danger={a.danger}
-                      class:ok={a.tone === "ok"}
-                      class:warn={a.tone === "warn"}
+                      class={actionTone(a)}
                       disabled={!a.enabled}
                       onclick={() => onaction?.(row, a)}>{a.label}</button
                     >
@@ -271,14 +270,6 @@
   .mv.accent { color: var(--accent); }
   .actions-cell { display: inline-flex; gap: 4px; }
   .actions-cell button { padding: 2px 10px; font-size: 11px; }
-  /* A tone says what the control means; danger is the one that also gates a
-     confirm, so it stays its own thing. */
-  .actions-cell button.ok { color: var(--ok); border-color: var(--ok-border); background: var(--ok-bg); }
-  .actions-cell button.warn { color: var(--warn); border-color: var(--warn-border); background: var(--warn-bg); }
-  .actions-cell button.danger {
-    background: var(--error-bg);
-    border-color: var(--error-border);
-    color: var(--error);
-  }
+  /* tone colours (ok, warn, accent, muted, danger) come from themes.css */
   input[type='checkbox'] { accent-color: var(--accent); }
 </style>

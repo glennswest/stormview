@@ -3,6 +3,11 @@
 ## [Unreleased]
 
 ### 2026-10-06
+- **fix:** `Action.tone` renders everywhere: ComponentCard colours action
+  buttons from `danger`, then `tone`, falling back to the action id
+  (start/restart) only without a tone; DataGrid paints all four tones, not
+  just ok/warn. `button.accent` and `button.muted` join themes.css; new
+  `actionTone(action)` helper in `stormview/utils` (#4).
 - **feat:** `LoginPanel` has an optional authenticator (TOTP) step and
   first-time enrolment: `onsubmit` may resolve to `{ step: 'totp' }` or
   `{ step: 'enroll', qr, secret }`, the code goes to the new
