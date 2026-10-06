@@ -37,7 +37,9 @@ shared by every storm daemon and web UI. Cross-project rules live in
   RelationPicker, HealthDot, LoginPanel.
 - `web/test/` — the Svelte half's check: `sc-build web/test/check.sh`
   compiles every component (Svelte 5 compiler) and drives LoginPanel's
-  steps under jsdom; installs svelte + jsdom into `$TMPDIR` on the box.
+  steps under jsdom, then builds `web/test/host/` with vite 6 +
+  vite-plugin-svelte 5 against the packed package (fails on plugin
+  warnings); installs everything into `$TMPDIR` on the box.
 - `test/` — the stormcos test container (own cargo workspace; `build.sh`,
   `Containerfile`, `stormview-test.yaml`, `src/`: contract checks, feed
   reader, HTTP/websocket client, short/medium/long suites). sc-build it

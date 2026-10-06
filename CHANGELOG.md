@@ -3,6 +3,12 @@
 ## [Unreleased]
 
 ### 2026-10-06
+- **fix:** `package.json`'s root export carries a `svelte` condition
+  (`".": { "svelte": "./web/index.js", "default": "./web/index.js" }`), so
+  vite-plugin-svelte no longer warns about a `svelte` field without one (#14).
+- **test:** `web/test/check.sh` also builds a minimal host app
+  (`web/test/host/`) with vite 6 + vite-plugin-svelte 5 against the packed
+  package, failing on any vite-plugin-svelte warning (#14).
 - **fix:** `Action.tone` renders everywhere: ComponentCard colours action
   buttons from `danger`, then `tone`, falling back to the action id
   (start/restart) only without a tone; DataGrid paints all four tones, not

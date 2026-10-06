@@ -169,7 +169,8 @@ the renderers.
   rebuilds, and ships **its own** golden
 - Build and test: `sc-build` on dev.g8.lo (`cargo build && cargo test`);
   the Svelte half: `sc-build web/test/check.sh` compiles every component
-  and drives LoginPanel under jsdom; hosts build it into their own UIs
+  and drives LoginPanel under jsdom, then builds a host app with vite +
+  vite-plugin-svelte (no plugin warnings); hosts build it into their own UIs
 - Releases are tags `vX.Y.Z` with matching `Cargo.toml` / `package.json`
   versions and a CHANGELOG entry
 
