@@ -6,7 +6,10 @@
   "license": "MIT",
   "svelte": "./web/index.js",
   "exports": {
-    ".": "./web/index.js",
+    ".": {
+      "svelte": "./web/index.js",
+      "default": "./web/index.js"
+    },
     "./themes.css": "./web/themes.css",
     "./theme": "./web/theme.svelte.js",
     "./utils": "./web/utils.js",
