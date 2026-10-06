@@ -62,6 +62,8 @@ shared by every storm daemon and web UI. Cross-project rules live in
       in themes.css; 16 tone checks in web/test/check.mjs (1c2bc79).
 
 ### In progress
+- [ ] #14 package.json root export gets a `svelte` condition; web/test/check.sh
+      gains a vite 6 + vite-plugin-svelte 5 host build that fails on the warning.
 - [ ] #8 test container — built (`test/`, 4c4320f): 14 unit tests and
       the static musl `test/build.sh` pass on sc-build. **Left:** a real
       `stormcentral test run stormview short|medium` on a test machine.
