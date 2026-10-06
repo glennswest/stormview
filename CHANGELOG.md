@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### 2026-10-06
+- **chore:** test-fixture credentials marked `not a secret` (inline, or `.github/secret_scanning.yml` for files that cannot hold a comment) — owner
 - **fix:** `package.json`'s root export carries a `svelte` condition
   (`".": { "svelte": "./web/index.js", "default": "./web/index.js" }`), so
   vite-plugin-svelte no longer warns about a `svelte` field without one (#14).

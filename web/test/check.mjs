@@ -103,7 +103,7 @@ async function run(props, Component = LoginPanel) {
   const codes = []
   let reply = async () => {}
   const done = await run({
-    onsubmit: async () => ({ step: 'enroll', qr: 'data:image/png;base64,AAAA', secret: 'JBSWY3DPEHPK3PXPJBSW' }),
+    onsubmit: async () => ({ step: 'enroll', qr: 'data:image/png;base64,AAAA', secret: 'JBSWY3DPEHPK3PXPJBSW' }), // not a secret: test fixture (RFC sample TOTP key, "Hello!")
     oncode: async (c, s) => {
       codes.push([c, s])
       return reply()
