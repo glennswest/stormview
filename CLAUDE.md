@@ -49,6 +49,12 @@ shared by every storm daemon and web UI. Cross-project rules live in
 - [x] #3 docs: Marp deck at `docs/presentation.md` (12 slides).
 
 ### In progress
+- [ ] #11 (2026-10-06): the stormcos node feed layout as a crate constant
+      (`NODE_FEEDS` in `src/lib.rs`: every port that serves
+      `/api/v1/components`, from stormcos `build-goldens.sh` + stormconsole
+      `NODE_PORTS`, plus stormimds's 8269), the test's default feed list
+      built from it (one `feed:<name>` per port, silent = skip), README
+      layout table + test section (also #16), stormconsole issue to adopt it.
 - [ ] #8 test container — built (`test/`, 4c4320f): 14 unit tests and
       the static musl `test/build.sh` pass on sc-build. **Left:** a real
       `stormcentral test run stormview short|medium` on a test machine.
@@ -65,7 +71,6 @@ shared by every storm daemon and web UI. Cross-project rules live in
   stormcentral#56 and stormcos#135 are fixed; else #11 (P1).
 
 ### Queued
-- #11 test: default feed list → the stormcos port layout (P1).
 - #10 Decide (owner): storage view — stormview reads storage.storm.io, or
   a daemon serves it as a feed; #9 waits on it.
 - #4 ComponentCard ignores `Action.tone`; DataGrid renders only ok/warn.
