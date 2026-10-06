@@ -53,6 +53,10 @@ shared by every storm daemon and web UI. Cross-project rules live in
       stormconsole#90 filed to adopt it. Released v0.5.0.
 
 ### In progress
+- [ ] #1 LoginPanel second step: `onsubmit` may resolve to `{ step: 'totp' }`
+      or `{ step: 'enroll', qr, secret }`; new `oncode(code, step)`; 6-digit
+      auto-submit, QR + show-key toggle, `← back`. Verify by compiling the
+      component with the svelte compiler on sc-build. Then stormcentral#123.
 - [ ] #8 test container — built (`test/`, 4c4320f): 14 unit tests and
       the static musl `test/build.sh` pass on sc-build. **Left:** a real
       `stormcentral test run stormview short|medium` on a test machine.
