@@ -168,7 +168,8 @@ the renderers.
   consumer updates its lock (`cargo update -p stormview` / npm reinstall),
   rebuilds, and ships **its own** golden
 - Build and test: `sc-build` on dev.g8.lo (`cargo build && cargo test`);
-  the Svelte half is exercised by the host apps' builds
+  the Svelte half: `sc-build web/test/check.sh` compiles every component
+  and drives LoginPanel under jsdom; hosts build it into their own UIs
 - Releases are tags `vX.Y.Z` with matching `Cargo.toml` / `package.json`
   versions and a CHANGELOG entry
 

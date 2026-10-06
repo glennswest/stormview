@@ -35,6 +35,9 @@ shared by every storm daemon and web UI. Cross-project rules live in
 - Docs last refreshed from the code 2026-09-27.
 - `web/components/*.svelte` — DataGrid, ComponentCard, ComponentGrid,
   RelationPicker, HealthDot, LoginPanel.
+- `web/test/` — the Svelte half's check: `sc-build web/test/check.sh`
+  compiles every component (Svelte 5 compiler) and drives LoginPanel's
+  steps under jsdom; installs svelte + jsdom into `$TMPDIR` on the box.
 - `test/` — the stormcos test container (own cargo workspace; `build.sh`,
   `Containerfile`, `stormview-test.yaml`, `src/`: contract checks, feed
   reader, HTTP/websocket client, short/medium/long suites). sc-build it
@@ -51,12 +54,11 @@ shared by every storm daemon and web UI. Cross-project rules live in
       crate; the test's default feed list is built from it, probed in
       parallel (884527f, sc-build passed); README table fixed (#16);
       stormconsole#90 filed to adopt it. Released v0.5.0.
+- [x] #1 LoginPanel authenticator step + enrolment (`oncode(code, step)`);
+      `web/test/check.sh` compiles every component and drives LoginPanel
+      under jsdom (21 checks, sc-build passed). stormcentral#123 adopts it.
 
 ### In progress
-- [ ] #1 LoginPanel second step: `onsubmit` may resolve to `{ step: 'totp' }`
-      or `{ step: 'enroll', qr, secret }`; new `oncode(code, step)`; 6-digit
-      auto-submit, QR + show-key toggle, `← back`. Verify by compiling the
-      component with the svelte compiler on sc-build. Then stormcentral#123.
 - [ ] #8 test container — built (`test/`, 4c4320f): 14 unit tests and
       the static musl `test/build.sh` pass on sc-build. **Left:** a real
       `stormcentral test run stormview short|medium` on a test machine.
@@ -68,7 +70,7 @@ shared by every storm daemon and web UI. Cross-project rules live in
       stormcos#135 is fixed; close #8 on a passing run.
 
 - Session state 2026-10-06: #11 done and released (v0.5.0). Next: #8
-  rerun when stormcos#135 is fixed; else #4 (P2).
+  rerun when stormcos#135 is fixed; else #4 (P2). #1 done (unreleased).
 
 ### Queued
 - #10 Decide (owner): storage view — stormview reads storage.storm.io, or
@@ -76,4 +78,3 @@ shared by every storm daemon and web UI. Cross-project rules live in
 - #4 ComponentCard ignores `Action.tone`; DataGrid renders only ok/warn.
 - #5 JS `formatDuration` doesn't clamp negatives like Rust.
 - #6 HealthDot glow colours hardcoded, not tokens.
-- #1 LoginPanel: TOTP step and first-time enrolment.

@@ -12,6 +12,7 @@ trap 'rm -rf "$work"' EXIT
 
 cd "$work"
 npm init -y >/dev/null
+npm pkg set type=module
 npm install --silent --no-audit --no-fund svelte@5 jsdom >/dev/null
 cp "$here"/*.mjs .
 node --conditions=browser check.mjs "$root/web/components"

@@ -339,12 +339,15 @@ escapes are stripped and all text is HTML-escaped.
 Never on the VM and never as root: push, then
 
 ```sh
-sc-build            # cargo build && cargo test on dev.g8.lo, from the pushed commit
+sc-build                     # cargo build && cargo test on dev.g8.lo, from the pushed commit
+sc-build web/test/check.sh   # the Svelte half: compile + LoginPanel under jsdom
 ```
 
 The unit tests cover the formatting helpers and a JSON round-trip of a
-full summary. The Svelte half has no build or test step here; it is
-exercised by the host apps' builds.
+full summary. The Svelte half has no build step here (hosts compile the
+source); `web/test/check.sh` installs svelte 5 and jsdom into `$TMPDIR`,
+compiles every component (errors fail, warnings print), and drives
+LoginPanel through its password, enrol and totp steps.
 
 ### The test container (`test/`)
 
