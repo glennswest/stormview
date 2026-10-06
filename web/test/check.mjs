@@ -30,8 +30,13 @@ for (const f of readdirSync(dir).filter((f) => f.endsWith('.svelte'))) {
 
 // --- LoginPanel, driven ---------------------------------------------------
 const dom = new JSDOM('<!doctype html><body></body>', { pretendToBeVisual: true })
-for (const k of ['window', 'document', 'navigator', 'Node', 'Element', 'HTMLElement', 'Event', 'getComputedStyle', 'requestAnimationFrame']) {
-  globalThis[k] ??= dom.window[k]
+// every DOM global the svelte client reaches for (Text, Comment, Node, …)
+globalThis.window = dom.window
+for (const k of Object.getOwnPropertyNames(dom.window)) {
+  if (k in globalThis) continue
+  try {
+    globalThis[k] = dom.window[k]
+  } catch {}
 }
 const { mount, unmount, flushSync } = await import('svelte')
 const LoginPanel = (await import(pathToFileURL(join(process.cwd(), 'LoginPanel.js')).href)).default
