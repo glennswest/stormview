@@ -47,14 +47,12 @@ shared by every storm daemon and web UI. Cross-project rules live in
       Cargo.toml version aligned with package.json (0.4.0); `Action.tone`
       changelogged (unreleased); doc/code gaps filed as #4, #5, #6.
 - [x] #3 docs: Marp deck at `docs/presentation.md` (12 slides).
+- [x] #11 `NODE_FEEDS` (stormcos node feed layout, 25 ports) in the
+      crate; the test's default feed list is built from it, probed in
+      parallel (884527f, sc-build passed); README table fixed (#16);
+      stormconsole#90 filed to adopt it. Released v0.5.0.
 
 ### In progress
-- [ ] #11 (2026-10-06): the stormcos node feed layout as a crate constant
-      (`NODE_FEEDS` in `src/lib.rs`: every port that serves
-      `/api/v1/components`, from stormcos `build-goldens.sh` + stormconsole
-      `NODE_PORTS`, plus stormimds's 8269), the test's default feed list
-      built from it (one `feed:<name>` per port, silent = skip), README
-      layout table + test section (also #16), stormconsole issue to adopt it.
 - [ ] #8 test container — built (`test/`, 4c4320f): 14 unit tests and
       the static musl `test/build.sh` pass on sc-build. **Left:** a real
       `stormcentral test run stormview short|medium` on a test machine.
@@ -62,13 +60,11 @@ shared by every storm daemon and web UI. Cross-project rules live in
       apiserver never answered /readyz). 2026-09-27: C2NR0Q2 on 11.50
       now answers /readyz, but its sbregistry (:5100) refuses connections
       (runs 43e9193e15, 2146f21771, dcae784bb9; noted on stormcentral#63),
-      and stormcentral#56 (`@@RESULT` quoting) is still open. Rerun
-      `short` and `medium` once both are fixed; close #8 on a passing run.
+      stormcentral#56 closed 2026-09-28. Rerun `short` and `medium` once
+      stormcos#135 is fixed; close #8 on a passing run.
 
-- Session state 2026-09-27 (before the restart): nothing in flight. Done
-  today: validated issues (#1 #4 #5 #6 #8 still real), mined comments (all
-  findings already filed), docs refreshed (a4b3884). Next: #8 rerun when
-  stormcentral#56 and stormcos#135 are fixed; else #11 (P1).
+- Session state 2026-10-06: #11 done and released (v0.5.0). Next: #8
+  rerun when stormcos#135 is fixed; else #4 (P2).
 
 ### Queued
 - #10 Decide (owner): storage view — stormview reads storage.storm.io, or
