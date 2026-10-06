@@ -9,7 +9,7 @@ description: The storm view contract and UI system — purpose and functionality
 <!--
 Render: npx @marp-team/marp-cli docs/presentation.md          (HTML)
         npx @marp-team/marp-cli --pdf docs/presentation.md    (PDF)
-Every claim here is checkable against the code as of v0.4.0 + Unreleased
+Every claim here is checkable against the code as of v0.5.0
 (src/lib.rs, web/). See README.md for the full reference.
 -->
 
@@ -19,7 +19,7 @@ Every claim here is checkable against the code as of v0.4.0 + Unreleased
 
 The storm view contract (Rust crate) and UI system (npm package, Svelte 5)
 
-v0.4.0 · github.com/glennswest/stormview
+v0.5.0 · github.com/glennswest/stormview
 
 ---
 
@@ -187,7 +187,7 @@ the renderers.
 
 ## Status
 
-- **v0.4.0** tagged; `Action.tone` merged, unreleased
+- **v0.5.0** tagged: `Action.tone`, `NODE_FEEDS`, the test container
 - Contract stable in practice: six repos build against it, nothing
   exhaust-matches `kind`, fields are added optional
 - Docs refreshed from the code (#2, again 2026-09-27)

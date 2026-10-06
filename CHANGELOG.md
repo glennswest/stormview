@@ -1,5 +1,23 @@
 # Changelog
 
+## [v0.5.0] — 2026-10-06
+
+### Added
+- `NODE_FEEDS` / `NodeFeed`: the stormcos node feed layout — every port that
+  serves `GET /api/v1/components` — as one list for every reader (#11).
+- `Action.tone` (`ok | warn | accent | muted`, optional): how a renderer
+  colours an action.
+- The stormcos test container (`test/`: short, medium and long suites, #8).
+
+### Fixed
+- `Cargo.toml` version aligned with `package.json`.
+- The test container reads every port of the layout (it read five, one
+  mislabelled), probed in parallel (#11).
+
+### Documentation
+- README, module docs and CLAUDE.md rewritten from the code (#2); Marp
+  deck (#3); README feed layout table complete (#16).
+
 ## [v0.4.0] — 2026-08-26
 
 ### Added
@@ -48,6 +66,7 @@
   `format_bytes` helpers.
 
 ## [Unreleased]
+<!-- New unreleased changes go here; the dated entries below shipped in v0.5.0. -->
 
 ### 2026-10-06
 - **feat:** `NODE_FEEDS` / `NodeFeed`: every port a stormcos node serves

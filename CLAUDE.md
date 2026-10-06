@@ -6,7 +6,7 @@ shared by every storm daemon and web UI. Cross-project rules live in
 
 ## Version
 
-- Current: **v0.4.0** (tag `v0.4.0`).
+- Current: **v0.5.0** (tag `v0.5.0`).
 - Version locations — all must match:
   - `Cargo.toml` → `version`
   - `package.json` → `version`
