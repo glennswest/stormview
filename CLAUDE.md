@@ -69,10 +69,11 @@ shared by every storm daemon and web UI. Cross-project rules live in
 - [x] #6 HealthDot glow mixed from the dot's token (`color-mix`), no fixed
       colours (006cdae); 4 checks in web/test/check.mjs pass on sc-build and
       fail with the old rgba put back (negative control, 2026-11-07).
+- [x] #5 JS `formatDuration` clamps negatives to `0s` like Rust (827effa);
+      9 checks in web/test/check.mjs pass on sc-build, and -5/-90 fail
+      with the clamp removed (negative control, 2026-11-07).
 
 ### In progress
-- [ ] #5 JS `formatDuration` clamps negatives to `0s` like Rust
-      (`Math.max(0, secs)`), with checks in web/test/check.mjs.
 - [ ] #8 test container — built (`test/`, 4c4320f): 14 unit tests and
       the static musl `test/build.sh` pass on sc-build. **Left:** a real
       `stormcentral test run stormview short|medium` on a test machine.
@@ -91,4 +92,3 @@ shared by every storm daemon and web UI. Cross-project rules live in
   a daemon serves it as a feed; #9 waits on it. 2026-10-06: both labelled
   `needs-owner`, #9 parked with `stormcentral wait-owner`; option 1 also
   waits on rustkube#83 (open). Do not start #9 until #10 is answered.
-- #5 JS `formatDuration` doesn't clamp negatives like Rust.
