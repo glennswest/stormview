@@ -62,10 +62,12 @@ shared by every storm daemon and web UI. Cross-project rules live in
 - [x] #4 action tones on ComponentCard + DataGrid via `actionTone(a)`
       (utils.js); id fallback on the card only; `button.accent`/`.muted`
       in themes.css; 16 tone checks in web/test/check.mjs (1c2bc79).
+- [x] #14 root export carries a `svelte` condition (e029d83); check.sh's
+      vite 6 + vite-plugin-svelte 5 host build fails on plugin warnings —
+      passes at dc33be1, and fails with the #14 warning when the old export
+      is put back (negative control, 2026-11-07).
 
 ### In progress
-- [ ] #14 package.json root export gets a `svelte` condition; web/test/check.sh
-      gains a vite 6 + vite-plugin-svelte 5 host build that fails on the warning.
 - [ ] #8 test container — built (`test/`, 4c4320f): 14 unit tests and
       the static musl `test/build.sh` pass on sc-build. **Left:** a real
       `stormcentral test run stormview short|medium` on a test machine.
