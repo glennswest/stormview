@@ -297,7 +297,9 @@ follows its `link`. The host implements the `#/grid` route itself.
 follow the picked component's `link`).
 
 **`HealthDot`** — props `health = 'unknown'`, `size = 10` (px); `error`
-pulses.
+pulses. The fill is `--ok` / `--warn-strong` / `--error` (`--text-ghost`
+for `idle` and `unknown`) and the glow is the same token faded with
+`color-mix`, so the halo follows the theme.
 
 **`LoginPanel`** — the sign-in screen, token-driven. Props:
 `title = 'storm'`, `subtitle = 'sign in to continue'`,
@@ -430,7 +432,6 @@ What the contract or docs promise that the renderers don't do yet:
 
 - JS `formatDuration` prints negative durations where Rust clamps to
   `0s` — #5.
-- `HealthDot`'s glow uses hardcoded colours, not theme tokens — #6.
 - The test container has not yet passed a run on a test machine. Runs
   on C2NR0Q2 (11.50) are blocked on the node's sbregistry not listening
   on :5100 (stormcos#135) — #8. (stormcentral#56, `@@RESULT` quoting,

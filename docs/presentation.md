@@ -179,7 +179,6 @@ the renderers.
 ## Planned (not in the code yet)
 
 - **#5** JS `formatDuration` clamps negatives like the Rust one
-- **#6** HealthDot's glow from theme tokens instead of fixed colours
 - **#9 / #10** a storage view: decide whether stormview reads
   `storage.storm.io` or a daemon serves it as a feed
 
@@ -197,5 +196,7 @@ the renderers.
 - Action tones render everywhere (#4, unreleased): ComponentCard and
   DataGrid paint `ok | warn | accent | muted`; stormconsole's vmimages
   "Retry" (`tone: "warn"`) now reads as one on a card too
+- HealthDot's glow is mixed from the dot's own token, so its halo
+  matches the theme (#6, unreleased)
 - LoginPanel's authenticator step landed (#1, unreleased); stormcentral
   moves its own copy back to it (stormcentral#123)

@@ -15,6 +15,7 @@ const ok = (cond, what) => {
 
 // --- every component compiles ---------------------------------------------
 const { compile } = await import('svelte/compiler')
+const css = {}
 for (const f of readdirSync(dir).filter((f) => f.endsWith('.svelte'))) {
   let res
   try {
@@ -25,6 +26,7 @@ for (const f of readdirSync(dir).filter((f) => f.endsWith('.svelte'))) {
   }
   for (const w of res.warnings) console.log(`warn  ${f}: ${w.code} ${w.message.split('\n')[0]}`)
   ok(true, `compile ${f}`)
+  css[f] = res.css?.code ?? ''
   // flat beside each other here: ./X.svelte → ./X.js, ../utils.js → ./utils.js
   const code = res.js.code
     .replace(/from '\.\/(\w+)\.svelte'/g, "from './$1.js'")
@@ -32,6 +34,17 @@ for (const f of readdirSync(dir).filter((f) => f.endsWith('.svelte'))) {
   writeFileSync(f.replace(/\.svelte$/, '.js'), code)
 }
 copyFileSync(join(dir, '..', 'utils.js'), 'utils.js')
+
+// --- HealthDot's glow comes from the dot's token (#6) -----------------------
+{
+  const c = css['HealthDot.svelte'] ?? ''
+  ok(!/rgba?\(|#[0-9a-f]{3,8}\b/i.test(c), 'HealthDot: no fixed colours in its CSS')
+  for (const [state, token] of [['ok', '--ok'], ['warn', '--warn-strong'], ['error', '--error']]) {
+    const rule = c.match(new RegExp(`\\.dot\\.${state}[^{]*\\{([^}]*)\\}`))?.[1] ?? ''
+    ok(rule.includes(`background: var(${token})`) && rule.includes(`color-mix(in srgb, var(${token})`),
+      `HealthDot: ${state} glow is mixed from ${token}, like its fill`)
+  }
+}
 
 // --- LoginPanel, driven ---------------------------------------------------
 const dom = new JSDOM('<!doctype html><body></body>', { pretendToBeVisual: true })

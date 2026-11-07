@@ -2,6 +2,12 @@
 
 ## [Unreleased]
 
+### 2026-11-07
+- **fix:** `HealthDot`'s glow is the dot's own token faded with
+  `color-mix(in srgb, var(--ok|--warn-strong|--error) 50–60%, transparent)`
+  instead of fixed Dracula rgba, so the halo matches the dot on every theme;
+  `web/test/check.mjs` checks the compiled CSS has no fixed colours (#6).
+
 ### 2026-10-06
 - **chore:** test-fixture credentials marked `not a secret` (inline, or `.github/secret_scanning.yml` for files that cannot hold a comment) — owner
 - **fix:** `package.json`'s root export carries a `svelte` condition
