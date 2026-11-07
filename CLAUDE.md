@@ -68,6 +68,8 @@ shared by every storm daemon and web UI. Cross-project rules live in
       is put back (negative control, 2026-11-07).
 
 ### In progress
+- [ ] #6 HealthDot glow from the state token via `color-mix` (no hardcoded
+      rgba); a check in web/test/check.mjs that the compiled CSS has no rgba.
 - [ ] #8 test container — built (`test/`, 4c4320f): 14 unit tests and
       the static musl `test/build.sh` pass on sc-build. **Left:** a real
       `stormcentral test run stormview short|medium` on a test machine.
