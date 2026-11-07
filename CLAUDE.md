@@ -66,10 +66,11 @@ shared by every storm daemon and web UI. Cross-project rules live in
       vite 6 + vite-plugin-svelte 5 host build fails on plugin warnings —
       passes at dc33be1, and fails with the #14 warning when the old export
       is put back (negative control, 2026-11-07).
+- [x] #6 HealthDot glow mixed from the dot's token (`color-mix`), no fixed
+      colours (006cdae); 4 checks in web/test/check.mjs pass on sc-build and
+      fail with the old rgba put back (negative control, 2026-11-07).
 
 ### In progress
-- [ ] #6 HealthDot glow from the state token via `color-mix` (no hardcoded
-      rgba); a check in web/test/check.mjs that the compiled CSS has no rgba.
 - [ ] #8 test container — built (`test/`, 4c4320f): 14 unit tests and
       the static musl `test/build.sh` pass on sc-build. **Left:** a real
       `stormcentral test run stormview short|medium` on a test machine.
@@ -89,4 +90,3 @@ shared by every storm daemon and web UI. Cross-project rules live in
   `needs-owner`, #9 parked with `stormcentral wait-owner`; option 1 also
   waits on rustkube#83 (open). Do not start #9 until #10 is answered.
 - #5 JS `formatDuration` doesn't clamp negatives like Rust.
-- #6 HealthDot glow colours hardcoded, not tokens.
