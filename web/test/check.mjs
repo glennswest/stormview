@@ -61,7 +61,7 @@ const load = async (f) => import(pathToFileURL(join(process.cwd(), f)).href)
 const LoginPanel = (await load('LoginPanel.js')).default
 const ComponentCard = (await load('ComponentCard.js')).default
 const DataGridC = (await load('DataGrid.js')).default
-const { actionTone } = await load('utils.js')
+const { actionTone, formatDuration } = await load('utils.js')
 
 const settle = async (ms = 0) => {
   await new Promise((r) => setTimeout(r, ms))
@@ -198,6 +198,13 @@ const want = { golden: 'ok', retry: 'warn', open: 'accent', rebuild: 'muted', st
 
 ok(actionTone({ tone: 'accent' }) === 'accent' && actionTone({ danger: true, tone: 'ok' }) === 'danger'
   && actionTone({ tone: 'nope' }) === '' && actionTone(undefined) === '', 'actionTone: danger wins, unknown tones are plain')
+
+// formatDuration matches format_duration in src/lib.rs, negatives clamped (#5).
+for (const [secs, want] of [[42, '42s'], [90, '1m 30s'], [3700, '1h 1m'], [90000, '1d 1h'],
+  [0, '0s'], [-5, '0s'], [-90, '0s'], [-90000, '0s'], [null, '-']]) {
+  const got = formatDuration(secs)
+  ok(got === want, `formatDuration(${secs}) = ${JSON.stringify(got)} (want ${JSON.stringify(want)})`)
+}
 
 const btnClass = (label) => {
   const b = $$('button').find((b) => b.textContent.trim() === label)

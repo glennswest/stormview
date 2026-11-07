@@ -131,7 +131,8 @@ Shared so every UI prints the same numbers the same way:
   steps, one decimal, up to TB).
 
 The JS side has the same two as `formatBytes` / `formatDuration`
-(which also return `-` for `null`).
+(which also return `-` for `null`; `formatDuration` clamps negatives to
+`0s` too).
 
 ## Who serves and renders it
 
@@ -430,8 +431,6 @@ golden. Releases here are tags (`vX.Y.Z`) with matching `Cargo.toml` and
 
 What the contract or docs promise that the renderers don't do yet:
 
-- JS `formatDuration` prints negative durations where Rust clamps to
-  `0s` — #5.
 - The test container has not yet passed a run on a test machine. Runs
   on C2NR0Q2 (11.50) are blocked on the node's sbregistry not listening
   on :5100 (stormcos#135) — #8. (stormcentral#56, `@@RESULT` quoting,

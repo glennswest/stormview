@@ -178,7 +178,6 @@ the renderers.
 
 ## Planned (not in the code yet)
 
-- **#5** JS `formatDuration` clamps negatives like the Rust one
 - **#9 / #10** a storage view: decide whether stormview reads
   `storage.storm.io` or a daemon serves it as a feed
 

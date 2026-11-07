@@ -10,8 +10,11 @@ export function formatBytes(bytes) {
   return val.toFixed(i > 0 ? 1 : 0) + ' ' + units[i]
 }
 
+// Two largest units, like format_duration in src/lib.rs; a negative
+// duration (clock skew, a future timestamp) clamps to 0s as Rust does.
 export function formatDuration(secs) {
   if (secs == null) return '-'
+  secs = Math.max(0, secs)
   const d = Math.floor(secs / 86400)
   const h = Math.floor((secs % 86400) / 3600)
   const m = Math.floor((secs % 3600) / 60)

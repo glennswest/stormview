@@ -3,6 +3,10 @@
 ## [Unreleased]
 
 ### 2026-11-07
+- **fix:** JS `formatDuration` clamps negative durations to `0s`
+  (`Math.max(0, secs)`), as Rust's `format_duration` does; it printed
+  `-5s` for -5 and `-30s` for -90. `web/test/check.mjs` checks it against
+  the Rust test values plus negatives (#5).
 - **fix:** `HealthDot`'s glow is the dot's own token faded with
   `color-mix(in srgb, var(--ok|--warn-strong|--error) 50–60%, transparent)`
   instead of fixed Dracula rgba, so the halo matches the dot on every theme;
