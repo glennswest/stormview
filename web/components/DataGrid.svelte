@@ -155,12 +155,15 @@
                   {/each}
                 </span>
               {:else if col.render === 'actions'}
-                <span class="actions-cell" onclick={(e) => e.stopPropagation()}>
+                <span class="actions-cell">
                   {#each v || [] as a}
                     <button
                       class={actionTone(a)}
                       disabled={!a.enabled}
-                      onclick={() => onaction?.(row, a)}>{a.label}</button
+                      onclick={(e) => {
+                        e.stopPropagation()
+                        onaction?.(row, a)
+                      }}>{a.label}</button
                     >
                   {/each}
                 </span>
