@@ -31,7 +31,9 @@ shared by every storm daemon and web UI. Cross-project rules live in
 - `web/theme.svelte.js` — theme list and selection state.
 - `web/themes.css` — tokens, 12 themes, base control styles.
 - `web/utils.js` — JS formatting helpers and `ansiToHtml`.
-- `docs/presentation.md` — Marp slide deck (purpose and functionality).
+- `docs/presentation.md` — Marp slide deck (purpose and functionality);
+  `sc-build deploy/check-slides.sh` fails if a slide overflows (copied
+  from stormcentral, #77).
 - Docs last refreshed from the code 2026-09-27.
 - `web/components/*.svelte` — DataGrid, ComponentCard, ComponentGrid,
   RelationPicker, HealthDot, LoginPanel.
