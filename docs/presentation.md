@@ -49,7 +49,7 @@ Depended on by (stormcentral's relationships graph):
 | stormdrive | storage | crate: drives and shelves feed |
 | stormstorage | storage | crate: nodes, pools, volumes feed |
 | stormipmi | node | crate: machines feed (`kind: machine`) |
-| stormcluster | (not in the graph) | crate: cluster, members, peers, operations feed |
+| stormcluster | (not in the graph, stormcentral#1312) | crate: cluster, members, peers, operations feed |
 | stormconsole | ui | crate: aggregates feeds · npm: web console |
 | stormcentral | ui | npm: themes, `HealthDot`, theme picker |
 
