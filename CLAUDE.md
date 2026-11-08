@@ -91,6 +91,12 @@ shared by every storm daemon and web UI. Cross-project rules live in
 - Session state 2026-10-06: #11 done and released (v0.5.0). Next: #8
   rerun when stormcos#135 is fixed; #1 and #4 done (unreleased); next #5/#6 (P3).
 
+### In progress (#17)
+- [ ] #17 docs: stormipmi feed is `kind: machine`; stormcluster added as a
+      consumer; presentation's stale stormcentral#56 / test-container status
+      replaced with the owner's 2026-10-06 scope (library only, no test
+      container, #8 closed).
+
 ### Queued
 - #10 Decide (owner): storage view — stormview reads storage.storm.io, or
   a daemon serves it as a feed; #9 waits on it. 2026-10-06: both labelled
