@@ -24,7 +24,9 @@ for (const f of readdirSync(dir).filter((f) => f.endsWith('.svelte'))) {
     ok(false, `compile ${f}: ${e.message}`)
     continue
   }
-  for (const w of res.warnings) console.log(`warn  ${f}: ${w.code} ${w.message.split('\n')[0]}`)
+  // Zero warnings (stormcentral#193): hosts turn Svelte warnings into errors,
+  // so a warning here is a failure (#15).
+  for (const w of res.warnings) ok(false, `${f}:${w.start?.line ?? '?'}: ${w.code} ${w.message.split('\n')[0]}`)
   ok(true, `compile ${f}`)
   css[f] = res.css?.code ?? ''
   // flat beside each other here: ./X.svelte → ./X.js, ../utils.js → ./utils.js
@@ -221,6 +223,30 @@ const btnClass = (label) => {
   const done = await run({ columns: [{ key: 'actions', label: '', render: 'actions' }], rows: [{ id: 'r1', actions: toned }] }, DataGridC)
   for (const [label, cls] of Object.entries(want)) ok(btnClass(label) === cls, `DataGrid: ${label} → '${cls}' (got '${btnClass(label)}')`)
   ok(btnClass('start') === '', 'DataGrid: no id fallback (as before)')
+  done()
+}
+
+// --- clicks inside the actions / select cells don't click the row (#15) ------
+{
+  const rowClicks = []
+  const actions = []
+  const done = await run({
+    columns: [{ key: 'name', label: 'Name' }, { key: 'actions', label: '', render: 'actions' }],
+    rows: [{ id: 'r1', name: 'one', actions: [act('restart')] }],
+    selectable: true,
+    onrowclick: (r) => rowClicks.push(r.id),
+    onaction: (r, a) => actions.push([r.id, a.id]),
+  }, DataGridC)
+  $$('button').find((b) => b.textContent.trim() === 'restart').click()
+  flushSync()
+  ok(actions.length === 1 && actions[0][0] === 'r1' && actions[0][1] === 'restart', 'DataGrid: action button calls onaction(row, action)')
+  ok(rowClicks.length === 0, `DataGrid: action button does not click the row (got ${rowClicks.length})`)
+  $('tbody input[type=checkbox]').click()
+  flushSync()
+  ok(rowClicks.length === 0, `DataGrid: select checkbox does not click the row (got ${rowClicks.length})`)
+  $$('tbody td').find((td) => td.textContent.trim() === 'one').click()
+  flushSync()
+  ok(rowClicks.length === 1 && rowClicks[0] === 'r1', 'DataGrid: a plain cell still clicks the row')
   done()
 }
 
