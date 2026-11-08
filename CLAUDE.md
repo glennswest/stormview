@@ -89,6 +89,11 @@ shared by every storm daemon and web UI. Cross-project rules live in
       replaced with the owner's 2026-10-06 scope (library only, no test
       container, #8 closed).
 
+### In progress (#12)
+- [ ] #12 DataGrid select-all scoped to its own grid's rows (adds/removes
+      only them; header checked when all of them are, indeterminate when
+      some); checks in web/test/check.mjs, negative control on the old code.
+
 ### Queued
 - #10 Decide (owner): storage view — stormview reads storage.storm.io, or
   a daemon serves it as a feed; #9 waits on it. 2026-10-06: both labelled
