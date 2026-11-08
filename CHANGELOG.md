@@ -3,6 +3,7 @@
 ## [Unreleased]
 
 ### 2026-11-07
+- **docs:** stormipmi's feed is `kind: machine` (id `machine:<tag>`), not `baremetalhost`; stormcluster added to the consumer tables (README, deck); the test-container sections and the stale stormcentral#56 / stormcos#135 status replaced with the owner's 2026-10-06 scope — a library, no test container, sc-build's tests are its tests (#17)
 - **fix:** `DataGrid`'s action buttons stop the click from reaching the row
   themselves, so the `actions-cell` span has no click handler and no longer
   raises `a11y_click_events_have_key_events` / `a11y_no_static_element_interactions`

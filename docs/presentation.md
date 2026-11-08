@@ -48,7 +48,8 @@ Depended on by (stormcentral's relationships graph):
 | stormd (+ stormsh) | tooling | crate: serves the feed; TUI renders it · npm: reference web app |
 | stormdrive | storage | crate: drives and shelves feed |
 | stormstorage | storage | crate: nodes, pools, volumes feed |
-| stormipmi | node | crate: bare-metal hosts feed |
+| stormipmi | node | crate: machines feed (`kind: machine`) |
+| stormcluster | (not in the graph) | crate: cluster, members, peers, operations feed |
 | stormconsole | ui | crate: aggregates feeds · npm: web console |
 | stormcentral | ui | npm: themes, `HealthDot`, theme picker |
 
@@ -57,7 +58,7 @@ Depended on by (stormcentral's relationships graph):
 ## How it works
 
 ```
-  daemon (stormd, stormdrive, stormstorage, stormipmi)
+  daemon (stormd, stormdrive, stormstorage, stormipmi, stormcluster)
     builds Vec<stormview::ComponentSummary>
     serves  GET /api/v1/components   (+ /ws/components snapshots)
          │  JSON — the same serde types on both sides
@@ -110,9 +111,9 @@ the renderers.
   (`ok | warn | accent | muted`, Unreleased) — what a control means
 - `format_duration` (`1h 1m`, clamps negatives) and `format_bytes`
   (`2.0 KB`, 1024 steps) so every UI prints numbers alike
-- Tests: helper formatting and a full-summary JSON round-trip; a
-  stormcos test container (`test/`, `/test short|medium|long`) that checks
-  the contract in the pod and reads the node's feeds with it (#8)
+- Tests: helper formatting and a full-summary JSON round-trip, run by
+  sc-build; no test container — stormview is a library and runs nowhere
+  (owner, 2026-10-06)
 
 ---
 
@@ -185,13 +186,12 @@ the renderers.
 
 ## Status
 
-- **v0.5.0** tagged: `Action.tone`, `NODE_FEEDS`, the test container
-- Contract stable in practice: six repos build against it, nothing
+- **v0.5.0** tagged: `Action.tone`, `NODE_FEEDS`
+- Contract stable in practice: seven repos build against it, nothing
   exhaust-matches `kind`, fields are added optional
 - Docs refreshed from the code (#2, again 2026-09-27)
-- Test container built and passing sc-build (#8); it reads every port of
-  the stormcos feed layout (`NODE_FEEDS`, #11); its first run on a test
-  machine waits on stormcos#135 (the node's sbregistry)
+- A library only (owner, 2026-10-06): no test container, its tests are
+  sc-build's; #8 closed
 - Action tones render everywhere (#4, unreleased): ComponentCard and
   DataGrid paint `ok | warn | accent | muted`; stormconsole's vmimages
   "Retry" (`tone: "warn"`) now reads as one on a card too

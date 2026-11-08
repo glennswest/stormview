@@ -136,7 +136,7 @@ The JS side has the same two as `formatBytes` / `formatDuration`
 
 ## Who serves and renders it
 
-Checked against each repo's code on 2026-09-27.
+Checked against each repo's code on 2026-11-07.
 
 **Rust crate** (`stormview = { git = "https://github.com/glennswest/stormview", branch = "main" }`):
 
@@ -146,7 +146,8 @@ Checked against each repo's code on 2026-09-27.
 | **stormsh** (in the stormd repo) | Renders stormd's feed as TUI tiles. |
 | **stormdrive** | Drives and shelves, with locate/fleet/test/designation actions; `GET /api/v1/components` + `/ws/components`. |
 | **stormstorage** | The federation — nodes, pools, distributed volumes with legs as relations; `GET /api/v1/components` + `/ws/components`. |
-| **stormipmi** | Its bare-metal hosts (`kind: baremetalhost`, power actions) on `GET /api/v1/components` (no websocket). |
+| **stormipmi** | Its machines (`kind: machine`, id `machine:<tag>`, power and boot-once actions) on `GET /api/v1/components` (no websocket); stormconsole shows them as `ipmi:machine:<tag>`. |
+| **stormcluster** | The cluster (`system`, `kind: cluster`), its members, peers and operations on `GET /api/v1/components` (no websocket). Pins the crate by `rev`, not `branch = "main"`. |
 | **stormconsole** | Aggregates feeds (ids re-prefixed, actions proxied through the console) and serves the result on `GET /api/v1/components` + `/ws/components`. Its stormdrive and stormstorage plugins read those daemons' feeds; its fleet plugin probes the node's port layout (below) and folds each stormd's feed in as `fleet:svc:<name>`, and fetches another node's feeds only when that node is opened. Other plugins (vmimages, …) build their own summaries. |
 
 ### Where the feeds are on a stormcos node
@@ -364,58 +365,14 @@ root export, a subpath, `themes.css` and a component — and fails on any
 vite-plugin-svelte warning. The root export carries a `svelte` condition
 (`".": { "svelte": …, "default": … }`), which the plugin expects.
 
-### The test container (`test/`)
+### No test container on a node
 
-Per stormcentral's `docs/test-standard.md`, stormview has a test image,
-run by stormcentral as a Job on every test machine:
-`stormcentral test run stormview short|medium|long`. `test/build.sh` builds
-the static test binary (its own cargo workspace, `test/Cargo.toml`,
-compiled against this checkout's crate) and `test/Containerfile` packages
-it `FROM scratch` as `/test`. `test/stormview-test.yaml` records the Job
-and the suites' metadata.
-
-stormview runs nothing on a node, so what it tests there is the contract
-itself and the feeds built from it: the commit under test is checked in
-the pod, then used to read `GET /api/v1/components` (and
-`/ws/components`) from the node's daemons. The default list is every
-port of the layout above (`NODE_FEEDS`, one `feed:<name>` result each,
-probed in parallel), or `STORMVIEW_FEEDS=name=host:port,…` to replace it.
-It is read-only: no API, nothing
-created, no action ever invoked; `requires: []`.
-
-| suite | what it checks |
-|---|---|
-| `short` | the README's example summary serializes to the documented JSON and back; every feed on the node reads with this commit's types |
-| `medium` | also: defaults, refusals (bad health / relation kind, missing fields), health order, builders, `format_duration`/`format_bytes` tables; per feed, integrity (unique ids, relation targets in the feed, methods, absolute action paths, tone vocabulary, hash links), exact read-back (no fields the contract doesn't know), and the first websocket snapshot matching `GET` |
-| `long` | waves until the window ends: readers at 2 per pod CPU (×1–3 by wave), half polling the node's feeds, half round-tripping a synthetic feed sized from the pod's memory; per wave p50/p95, errors, this process's RSS and open descriptors; `trend` fails on a wave slower than the first of its size, or residue that grows |
-
-What the container reads (`test/src/env.rs`; the runner sets the
-`STORM_*` values, per the test standard):
-
-| variable | default | use |
-|---|---|---|
-| suite (the first argument, else `STORM_SUITE`) | `short` | `short`, `medium` or `long` |
-| `STORM_NODE` | none | the node whose feeds are read; with neither it nor `STORMVIEW_FEEDS`, there are no feeds (exit 2) |
-| `STORMVIEW_FEEDS` | the list above | `name=host:port,…`; repeating a name adds a fallback address for it |
-| `STORM_TIMEOUT` (seconds) | 120 short, 1800 medium, 28800 long | the time budget; `long` runs waves until it ends, each 1/24 of it, clamped to 30 s–10 min |
-| `STORM_RESULTS` | `/results` | where `results.jsonl` is written |
-
-`STORM_NAMESPACE`, `STORM_RUN_ID`, `STORM_COMPONENT` and `STORM_COMMIT`
-are set in the Job but not read.
-
-A feed that isn't served is **skip**, and so is one behind a login
-(401/403: no credentials are handed in or baked in). If none answers at
-all, that is an infrastructure error. Results are JSON lines on stdout and
-in `/results/results.jsonl`, then a `{"summary": {pass, fail, skip}}` line
-(infrastructure errors count as `fail`). The exit code is 0 when nothing
-failed, 1 when a test failed, and 2 when only infrastructure did (no
-`STORM_NODE` and no `STORMVIEW_FEEDS`, no feed answering, an unknown suite).
-
-Build and unit-test it, with the crate, on the build box:
-
-```sh
-sc-build 'cargo test && cargo test --manifest-path test/Cargo.toml && test/build.sh'
-```
+stormview is a library, nothing more (owner, 2026-10-06, #8/#17): it
+runs nowhere, so the stormcos test-container rule — for components that
+run on a node — does not apply. Its tests are the ones sc-build runs: the
+crate's unit tests and `web/test/check.sh`. The `test/` directory (a
+contract checker that reads a node's feeds) predates that decision; it is
+not run as a Job and is not part of what stormview ships.
 
 ## How it ships
 
@@ -431,7 +388,5 @@ golden. Releases here are tags (`vX.Y.Z`) with matching `Cargo.toml` and
 
 What the contract or docs promise that the renderers don't do yet:
 
-- The test container has not yet passed a run on a test machine. Runs
-  on C2NR0Q2 (11.50) are blocked on the node's sbregistry not listening
-  on :5100 (stormcos#135) — #8. (stormcentral#56, `@@RESULT` quoting,
-  closed 2026-09-28.)
+- The renderer gaps still open are this repo's open issues (DataGrid
+  nesting #12/#13, `Action` request bodies #20, `NODE_FEEDS` #21).

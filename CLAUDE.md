@@ -40,10 +40,8 @@ shared by every storm daemon and web UI. Cross-project rules live in
   steps under jsdom, then builds `web/test/host/` with vite 6 +
   vite-plugin-svelte 5 against the packed package (fails on plugin
   warnings); installs everything into `$TMPDIR` on the box.
-- `test/` — the stormcos test container (own cargo workspace; `build.sh`,
-  `Containerfile`, `stormview-test.yaml`, `src/`: contract checks, feed
-  reader, HTTP/websocket client, short/medium/long suites). sc-build it
-  with `sc-build 'cargo test && cargo test --manifest-path test/Cargo.toml && test/build.sh'`.
+- `test/` — a feed/contract checker from before the owner's 2026-10-06
+  scope (library only, no test container); not run on test machines.
 
 ## Work plan
 
@@ -78,21 +76,13 @@ shared by every storm daemon and web UI. Cross-project rules live in
       negative control), passes at the fix, 2026-11-07.
 
 ### In progress
-- [ ] #8 test container — built (`test/`, 4c4320f): 14 unit tests and
-      the static musl `test/build.sh` pass on sc-build. **Left:** a real
-      `stormcentral test run stormview short|medium` on a test machine.
-      Blocked: run e993dc0dc0 errored before the image stage (C2NR0Q2's
-      apiserver never answered /readyz). 2026-09-27: C2NR0Q2 on 11.50
-      now answers /readyz, but its sbregistry (:5100) refuses connections
-      (runs 43e9193e15, 2146f21771, dcae784bb9; noted on stormcentral#63),
-      stormcentral#56 closed 2026-09-28. Rerun `short` and `medium` once
-      stormcos#135 is fixed; close #8 on a passing run.
+- [x] #8 closed by the owner 2026-10-06: stormview is a library, exempt
+      from the test-container rule; sc-build's tests are its tests.
 
-- Session state 2026-10-06: #11 done and released (v0.5.0). Next: #8
-  rerun when stormcos#135 is fixed; #1 and #4 done (unreleased); next #5/#6 (P3).
+- Session state 2026-10-06: #11 done and released (v0.5.0). #1 and #4 done (unreleased); next #5/#6 (P3).
 
 ### In progress (#17)
-- [ ] #17 docs: stormipmi feed is `kind: machine`; stormcluster added as a
+- [x] #17 docs: stormipmi feed is `kind: machine`; stormcluster added as a
       consumer; presentation's stale stormcentral#56 / test-container status
       replaced with the owner's 2026-10-06 scope (library only, no test
       container, #8 closed).
