@@ -74,6 +74,9 @@ shared by every storm daemon and web UI. Cross-project rules live in
       with the clamp removed (negative control, 2026-11-07).
 
 ### In progress
+- [ ] #15 DataGrid actions-cell `a11y_click_events_have_key_events`: stop
+      propagation on the buttons, drop the span's handler; check.mjs fails
+      on any compiler warning.
 - [ ] #8 test container — built (`test/`, 4c4320f): 14 unit tests and
       the static musl `test/build.sh` pass on sc-build. **Left:** a real
       `stormcentral test run stormview short|medium` on a test machine.
