@@ -3,6 +3,14 @@
 ## [Unreleased]
 
 ### 2026-11-07
+- **fix:** `DataGrid`'s action buttons stop the click from reaching the row
+  themselves, so the `actions-cell` span has no click handler and no longer
+  raises `a11y_click_events_have_key_events` / `a11y_no_static_element_interactions`
+  in hosts that turn Svelte warnings into errors (stormcentral#193). A click
+  in the gap between buttons now counts as a row click (#15).
+- **test:** `web/test/check.mjs` fails on any Svelte compiler warning, and
+  checks that an action button or the select checkbox does not click the
+  row while a plain cell does (#15).
 - **fix:** JS `formatDuration` clamps negative durations to `0s`
   (`Math.max(0, secs)`), as Rust's `format_duration` does; it printed
   `-5s` for -5 and `-30s` for -90. `web/test/check.mjs` checks it against

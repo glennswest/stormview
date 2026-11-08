@@ -36,7 +36,7 @@ shared by every storm daemon and web UI. Cross-project rules live in
 - `web/components/*.svelte` — DataGrid, ComponentCard, ComponentGrid,
   RelationPicker, HealthDot, LoginPanel.
 - `web/test/` — the Svelte half's check: `sc-build web/test/check.sh`
-  compiles every component (Svelte 5 compiler) and drives LoginPanel's
+  compiles every component (Svelte 5 compiler; any warning fails) and drives LoginPanel's
   steps under jsdom, then builds `web/test/host/` with vite 6 +
   vite-plugin-svelte 5 against the packed package (fails on plugin
   warnings); installs everything into `$TMPDIR` on the box.
@@ -72,11 +72,12 @@ shared by every storm daemon and web UI. Cross-project rules live in
 - [x] #5 JS `formatDuration` clamps negatives to `0s` like Rust (827effa);
       9 checks in web/test/check.mjs pass on sc-build, and -5/-90 fail
       with the clamp removed (negative control, 2026-11-07).
+- [x] #15 DataGrid action buttons stop the row click themselves; the
+      actions span has no handler (no a11y warnings). check.mjs now fails on
+      any Svelte compiler warning — failed on the old span (2 warnings,
+      negative control), passes at the fix, 2026-11-07.
 
 ### In progress
-- [ ] #15 DataGrid actions-cell `a11y_click_events_have_key_events`: stop
-      propagation on the buttons, drop the span's handler; check.mjs fails
-      on any compiler warning.
 - [ ] #8 test container — built (`test/`, 4c4320f): 14 unit tests and
       the static musl `test/build.sh` pass on sc-build. **Left:** a real
       `stormcentral test run stormview short|medium` on a test machine.

@@ -1,6 +1,6 @@
 #!/bin/sh
 # The Svelte half's check: compile every component with the Svelte 5
-# compiler (errors fail, warnings print), then drive LoginPanel through its
+# compiler (errors and warnings fail), then drive LoginPanel through its
 # steps under jsdom, then build a minimal host app (web/test/host/) with
 # vite 6 + @sveltejs/vite-plugin-svelte 5 against the packed package — it
 # fails on any vite-plugin-svelte WARNING (e.g. a `svelte` field without an

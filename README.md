@@ -356,7 +356,7 @@ sc-build web/test/check.sh   # the Svelte half: compile + LoginPanel under jsdom
 The unit tests cover the formatting helpers and a JSON round-trip of a
 full summary. The Svelte half has no build step here (hosts compile the
 source); `web/test/check.sh` installs svelte 5 and jsdom into `$TMPDIR`,
-compiles every component (errors fail, warnings print), and drives
+compiles every component (errors and warnings both fail), and drives
 LoginPanel through its password, enrol and totp steps. It then packs the
 package (`npm pack`) and builds a minimal host app (`web/test/host/`) with
 vite 6 + `@sveltejs/vite-plugin-svelte` 5 the way a storm web UI does — the
