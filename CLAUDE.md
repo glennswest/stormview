@@ -94,6 +94,12 @@ shared by every storm daemon and web UI. Cross-project rules live in
       replaced with the owner's 2026-10-06 scope (library only, no test
       container, #8 closed).
 
+### In progress (#13)
+- [ ] #13 DataGrid: a nested section's `getChildren: null` means "no
+      children" (only an absent/undefined one inherits the parent's), so a
+      leaf grid has no expander column; checks in web/test/check.mjs,
+      negative control on the old code.
+
 ### Queued
 - #10 Decide (owner): storage view — stormview reads storage.storm.io, or
   a daemon serves it as a feed; #9 waits on it. 2026-10-06: both labelled
