@@ -250,5 +250,62 @@ const btnClass = (label) => {
   done()
 }
 
+// --- select-all is scoped to its own grid's rows (#12) ----------------------
+{
+  // Top grid: two shelves, each shelf's drives in a nested grid, one shared
+  // `selected` (bind:selected between levels). Read the selection back from
+  // the rows' `selected` class.
+  const drives = (s, n) => Array.from({ length: n }, (_, i) => ({ id: `${s}${i}`, name: `${s}${i}` }))
+  const shelves = { A: drives('a', 3), B: drives('b', 4) }
+  const done = await run({
+    columns: [{ key: 'name', label: 'Name' }],
+    rows: [{ id: 'A', name: 'A' }, { id: 'B', name: 'B' }],
+    getChildren: (r) => [{ title: 'drives', rows: shelves[r.id], getChildren: null }],
+    selectable: 'multi',
+  }, DataGridC)
+  $$('button.expander').forEach((b) => b.click())
+  flushSync()
+  const grids = () => $$('table') // [top, A, B]
+  const head = (g) => grids()[g].querySelector('thead input[type=checkbox]')
+  const nameOf = (tr) => tr.querySelector(':scope > td:not(.ctl)')?.textContent.trim()
+  const box = (id) => $$('tbody tr').find((tr) => nameOf(tr) === id)?.querySelector(':scope > td.ctl input[type=checkbox]')
+  const sel = () => $$('tbody tr.selected').map(nameOf).sort().join(',')
+  const click = (el) => {
+    el.click()
+    flushSync()
+  }
+
+  ok(grids().length === 3, `select-all: top grid and two nested grids (got ${grids().length})`)
+  for (const id of ['a0', 'a1', 'a2']) click(box(id))
+  ok(sel() === 'a0,a1,a2', `select-all: three drives on A ticked (got ${sel()})`)
+  ok(head(1).checked && !head(1).indeterminate, 'select-all: A header checked when all of A is')
+  ok(!head(2).checked && !head(2).indeterminate, 'select-all: B header unchecked with none of B ticked')
+  ok(!head(0).checked && !head(0).indeterminate, 'select-all: top header unchecked with no shelf ticked')
+
+  click(head(2))
+  ok(sel() === 'a0,a1,a2,b0,b1,b2,b3', `select-all on B adds B's drives, keeps A's (got ${sel()})`)
+  ok(head(2).checked && head(1).checked, 'select-all: A and B headers both checked')
+
+  click(box('b1'))
+  ok(!head(2).checked && head(2).indeterminate, 'select-all: B header indeterminate when some of B is ticked')
+  click(head(2))
+  ok(sel() === 'a0,a1,a2,b0,b1,b2,b3', `select-all from indeterminate selects all of B (got ${sel()})`)
+  click(head(2))
+  ok(sel() === 'a0,a1,a2', `select-all off on B removes only B's drives (got ${sel()})`)
+
+  // 3 ticked elsewhere, A has 3 rows: the old code showed A checked by count
+  // alone. Untick one of A and tick a B drive: still 3 ticked, A not all.
+  click(box('a2'))
+  click(box('b0'))
+  ok(!head(1).checked && head(1).indeterminate, 'select-all: A header not checked by a matching global count')
+
+  click(head(0))
+  ok(sel() === 'A,B,a0,a1,b0', `top select-all adds the shelves, keeps the drives (got ${sel()})`)
+  ok(head(0).checked && !head(0).indeterminate, 'select-all: top header checked')
+  click(head(0))
+  ok(sel() === 'a0,a1,b0', `top select-all off removes only the shelves (got ${sel()})`)
+  done()
+}
+
 console.log(failed ? `${failed} failed` : 'all passed')
 process.exit(failed ? 1 : 0)

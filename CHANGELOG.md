@@ -2,6 +2,14 @@
 
 ## [Unreleased]
 
+### 2026-11-10
+- **fix:** `DataGrid` select-all is scoped to its own grid's rows: with
+  `selected` shared across nested grids, it adds or removes only that
+  grid's ids instead of replacing the whole selection, and its header
+  checkbox is checked when all of its rows are selected (not when the
+  global count equals its row count), indeterminate when some are.
+  `web/test/check.mjs` drives a two-level grid through it (#12).
+
 ### 2026-11-07
 - **docs:** stormipmi's feed is `kind: machine` (id `machine:<tag>`), not `baremetalhost`; stormcluster added to the consumer tables (README, deck); the test-container sections and the stale stormcentral#56 / stormcos#135 status replaced with the owner's 2026-10-06 scope — a library, no test container, sc-build's tests are its tests (#17)
 - **chore:** `deploy/check-slides.sh` + `deploy/slide-fit.mjs` copied from stormcentral (#77) to check the deck fits its 16:9 frames: `sc-build deploy/check-slides.sh`

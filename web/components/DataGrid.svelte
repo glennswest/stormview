@@ -68,8 +68,17 @@
     }
   }
 
+  // Select-all is scoped to this grid's own rows (#12): `selected` is shared
+  // with nested grids (bind:selected), so it adds or removes only these ids
+  // and leaves the rest of the selection alone.
+  const mine = $derived(rows.map((r) => r.id))
+  const mineSelected = $derived(mine.filter((id) => selected.includes(id)).length)
+  const allMine = $derived(mine.length > 0 && mineSelected === mine.length)
+  const someMine = $derived(mineSelected > 0 && !allMine)
+
   function toggleSelectAll() {
-    selected = selected.length === rows.length ? [] : rows.map((r) => r.id)
+    if (allMine) selected = selected.filter((id) => !mine.includes(id))
+    else selected = [...new Set([...selected, ...mine])]
   }
 
   function childrenOf(row) {
@@ -90,7 +99,8 @@
             {#if selectable === 'multi'}
               <input
                 type="checkbox"
-                checked={rows.length > 0 && selected.length === rows.length}
+                checked={allMine}
+                indeterminate={someMine}
                 onchange={toggleSelectAll}
               />
             {/if}

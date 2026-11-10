@@ -252,7 +252,7 @@ the server's configured default, which beats `storm`.
 | `columns` | `[]` | `[{key, label, width?, render?, sortable?}]`; `render` is `'text'` (default), `'mono'`, `'health'`, `'metrics'`, `'actions'`, or `(row) => string` |
 | `rows` | `[]` | objects with a stable `id`; cells read `row[key]` |
 | `getChildren` | `null` | `(row) => [{title, rows, columns?, getChildren?}]`; non-empty ⇒ the row gets an expander and nested grids |
-| `selectable` | `null` | `null`, `'single'` or `'multi'` (multi adds select-all) |
+| `selectable` | `null` | `null`, `'single'` or `'multi'` (multi adds select-all, scoped to that grid's own rows) |
 | `selected` | `[]` | bindable array of ids, shared with nested grids |
 | `onaction` | `null` | `(row, action)` from `'actions'` cells |
 | `onrowclick` | `null` | `(row)` |
@@ -261,6 +261,10 @@ Columns sort on header click (toggle direction) unless `sortable: false`.
 Action buttons honour `enabled`, `danger`, and every `tone`
 (`ok | warn | accent | muted`).
 DataGrid does not confirm `danger` actions itself — `onaction` decides.
+With `'multi'`, each grid's header checkbox covers only its own rows: it
+adds or removes them from the shared `selected` and leaves ids from other
+grids (parent or nested) alone. It is checked when all of its rows are
+selected and indeterminate when some are.
 
 **`ComponentCard`** — one `ComponentSummary` as a card: health dot, a kind
 icon (known kinds: system, process, plugin, cron, storage, logs, updater;
