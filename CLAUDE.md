@@ -81,6 +81,10 @@ shared by every storm daemon and web UI. Cross-project rules live in
       some); 15 checks in web/test/check.mjs pass on sc-build at bd9854f and
       9 fail with the old code put back (negative control, 2026-11-10).
       stormdrive#41 can drop its workaround once it takes this commit.
+- [x] #13 DataGrid: a section's `getChildren: null` is a leaf grid (no
+      expander column); absent/undefined inherits the parent's. 4 checks in
+      web/test/check.mjs pass on sc-build at b4462ea; the leaf check fails
+      with the old `??` put back (negative control, 2026-11-10).
 
 ### In progress
 - [x] #8 closed by the owner 2026-10-06: stormview is a library, exempt
@@ -93,12 +97,6 @@ shared by every storm daemon and web UI. Cross-project rules live in
       consumer; presentation's stale stormcentral#56 / test-container status
       replaced with the owner's 2026-10-06 scope (library only, no test
       container, #8 closed).
-
-### In progress (#13)
-- [ ] #13 DataGrid: a nested section's `getChildren: null` means "no
-      children" (only an absent/undefined one inherits the parent's), so a
-      leaf grid has no expander column; checks in web/test/check.mjs,
-      negative control on the old code.
 
 ### Queued
 - #10 Decide (owner): storage view — stormview reads storage.storm.io, or
