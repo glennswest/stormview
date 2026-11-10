@@ -98,6 +98,12 @@ shared by every storm daemon and web UI. Cross-project rules live in
       replaced with the owner's 2026-10-06 scope (library only, no test
       container, #8 closed).
 
+### In progress (#22)
+- [ ] #22 LoginPanel `remember` prop (`null` | `{ label, checked }`): a
+      checkbox on the totp/enroll steps (min-height 44px), passed as
+      `oncode(code, step, remembered)` (`undefined` when unset); checks in
+      web/test/check.mjs; README. stormcentral#123 then drops its copy.
+
 ### Queued
 - #10 Decide (owner): storage view — stormview reads storage.storm.io, or
   a daemon serves it as a feed; #9 waits on it. 2026-10-06: both labelled
