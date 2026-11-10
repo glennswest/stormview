@@ -3,6 +3,12 @@
 ## [Unreleased]
 
 ### 2026-11-10
+- **feat:** `LoginPanel` takes an optional `remember` prop (`null` |
+  `{ label, checked }`): a touch-sized (min-height 44px) checkbox on the
+  totp and enroll steps, starting at `checked`, whose value is passed as
+  `oncode(code, step, remembered)`. Unset, the panel is unchanged and the
+  third argument is `undefined`. For stormcentral's phone app
+  ("remember this device for 30 days", stormcentral#123/#631) (#22).
 - **fix:** `DataGrid`: a nested section's `getChildren: null` now means
   "no children" — a leaf grid with no expander column. Only an absent or
   `undefined` `getChildren` inherits the parent's; before, `null` did too

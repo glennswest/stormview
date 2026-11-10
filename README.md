@@ -323,6 +323,13 @@ fours). The code goes to the `oncode(code, step)` prop (async, `step` is
 `'totp'` or `'enroll'`), with the same inline error, shake and busy
 behaviour; a thrown error with `restart: true` (say, an expired ticket)
 returns to the password step after 1.5 s. `← back` returns to it at once.
+`remember` (default `null`: nothing shown) takes `{ label, checked }`, e.g.
+`{ label: 'remember this device for 30 days', checked: true }`: a
+touch-sized checkbox under the code input on both code steps, starting at
+`checked` each time a code step opens, and its value goes to `oncode` as a
+third argument — `oncode(code, step, remembered)`; it is `undefined` when
+`remember` is unset. The code auto-submits at six digits, so the box is set
+before the code is typed.
 Any other resolved value from `onsubmit` leaves the panel as it is (the host
 has signed in and moves on). The host keeps its own ticket between the
 steps:

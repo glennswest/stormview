@@ -183,6 +183,65 @@ async function run(props, Component = LoginPanel) {
   done()
 }
 
+// 5. remember this device (#22)
+{
+  // unset: nothing shown on either code step, oncode gets no third value
+  const calls = []
+  const done = await run({
+    onsubmit: async () => ({ step: 'enroll', qr: 'data:image/png;base64,AAAA', secret: 'JBSWY3DPEHPK3PXP' }), // test fixture, not a secret
+    oncode: async (...a) => void calls.push(a),
+  })
+  ok(!$('.remember'), 'remember unset: nothing on the password step')
+  type($('input[type=password]'), 'pw')
+  submit()
+  await settle()
+  ok(!$('.remember') && !$('form input[type=checkbox]'), 'remember unset: no checkbox on the enroll step')
+  type($('input.code'), '123456')
+  await settle()
+  ok(calls.length === 1 && calls[0][2] === undefined, `remember unset: oncode's third argument is undefined (got ${calls[0]?.[2]})`)
+  done()
+}
+{
+  const rule = (css['LoginPanel.svelte'] ?? '').match(/\.remember\.svelte-[\w-]+\s*\{([^}]*)\}/)?.[1] ?? ''
+  ok(/min-height:\s*44px/.test(rule), 'remember: the row is touch-sized (min-height: 44px)')
+}
+for (const [step, checked] of [['totp', true], ['enroll', true], ['totp', false], ['enroll', false]]) {
+  const calls = []
+  const label = 'remember this device for 30 days'
+  const done = await run({
+    remember: { label, checked },
+    onsubmit: async () => (step === 'totp' ? { step } : { step, qr: 'data:image/png;base64,AAAA', secret: 'JBSWY3DPEHPK3PXP' }),
+    oncode: async (...a) => {
+      calls.push(a)
+      if (calls.length === 1) throw new Error('wrong code')
+    },
+  })
+  ok(!$('.remember'), `remember ${step}/${checked}: not on the password step`)
+  type($('input[type=password]'), 'pw')
+  submit()
+  await settle()
+  const box = () => $('.remember input[type=checkbox]')
+  ok(!!box() && text('.remember') === label, `remember ${step}/${checked}: checkbox with its label on the ${step} step`)
+  ok(box()?.checked === checked, `remember ${step}/${checked}: starts at ${checked}`)
+  // left as it starts, then flipped by the user: oncode gets what is shown
+  type($('input.code'), '111111')
+  await settle()
+  ok(calls[0]?.[2] === checked, `remember ${step}/${checked}: oncode(code, step, ${checked}) as left (got ${calls[0]?.[2]})`)
+  box().click()
+  flushSync()
+  type($('input.code'), '222222')
+  await settle()
+  ok(calls[1]?.[1] === step && calls[1]?.[2] === !checked, `remember ${step}/${checked}: flipped, oncode gets ${!checked} (got ${calls[1]?.[2]})`)
+  // back and in again: starts at `checked` once more
+  $$('button.link').at(-1).click()
+  flushSync()
+  type($('input[type=password]'), 'pw')
+  submit()
+  await settle()
+  ok(box()?.checked === checked, `remember ${step}/${checked}: a new code step starts at ${checked} again`)
+  done()
+}
+
 // --- action tones (#4) ------------------------------------------------------
 const act = (id, extra = {}) => ({ id, label: id, method: 'POST', path: `/api/v1/x/${id}`, enabled: true, danger: false, ...extra })
 const toned = [

@@ -10,6 +10,10 @@
   // oncode(code, step); a thrown error shows inline like the password's, and
   // one with `restart: true` (say, an expired ticket) returns to the password
   // step. Any other resolved value leaves the panel as it is.
+  //
+  // remember: null (nothing shown) or { label, checked } — a checkbox on
+  // both code steps, starting at `checked` each time a code step opens; its
+  // value goes to oncode as a third argument (undefined when unset, #22).
   import { tick } from 'svelte'
 
   let {
@@ -18,6 +22,7 @@
     askUsername = true,
     onsubmit,
     oncode = null,
+    remember = null,
   } = $props()
 
   let step = $state('password') // password | totp | enroll
@@ -30,6 +35,7 @@
   let busy = $state(false)
   let shake = $state(false)
   let codeInput = $state(null)
+  let remembered = $state(false)
 
   function fail(err, fallback) {
     error = err?.message || fallback
@@ -49,6 +55,7 @@
         showSecret = false
         code = ''
         password = ''
+        remembered = !!remember?.checked
         step = r.step
       }
     } catch (err) {
@@ -65,7 +72,7 @@
     busy = true
     error = ''
     try {
-      await oncode(code, step)
+      await oncode(code, step, remember ? remembered : undefined)
     } catch (err) {
       code = ''
       fail(err, 'code not accepted')
@@ -169,6 +176,12 @@
         autofocus
         disabled={busy}
       />
+      {#if remember}
+        <label class="remember">
+          <input type="checkbox" bind:checked={remembered} disabled={busy} />
+          <span>{remember.label}</span>
+        </label>
+      {/if}
       <button type="submit" disabled={busy || code.length !== 6}>
         {busy ? 'Checking…' : step === 'enroll' ? 'Confirm and sign in' : 'Sign in'}
       </button>
@@ -288,6 +301,32 @@
     font-size: 26px;
     letter-spacing: 10px;
     padding: 10px 12px 10px 22px;
+  }
+  /* touch-sized row: the whole label is the target */
+  .remember {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 44px;
+    font-size: 13px;
+    color: var(--text-dim);
+    cursor: pointer;
+    user-select: none;
+  }
+  .remember input {
+    width: 18px;
+    height: 18px;
+    margin: 0;
+    padding: 0;
+    flex: none;
+    accent-color: var(--accent);
+    cursor: pointer;
+  }
+  .remember input:focus { box-shadow: none; }
+  .remember input:focus-visible {
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
   }
   button {
     padding: 11px 14px;
