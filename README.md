@@ -251,12 +251,13 @@ the server's configured default, which beats `storm`.
 |---|---|---|
 | `columns` | `[]` | `[{key, label, width?, render?, sortable?}]`; `render` is `'text'` (default), `'mono'`, `'health'`, `'metrics'`, `'actions'`, or `(row) => string` |
 | `rows` | `[]` | objects with a stable `id`; cells read `row[key]` |
-| `getChildren` | `null` | `(row) => [{title, rows, columns?, getChildren?}]`; non-empty ⇒ the row gets an expander and nested grids |
+| `getChildren` | `null` | `(row) => [{title, rows, columns?, getChildren?}]`; non-empty ⇒ the row gets an expander and nested grids. A section's own `getChildren` overrides it: `null` makes a leaf grid with no expander column; absent (or `undefined`) inherits the parent's |
 | `selectable` | `null` | `null`, `'single'` or `'multi'` (multi adds select-all, scoped to that grid's own rows) |
 | `selected` | `[]` | bindable array of ids, shared with nested grids |
 | `onaction` | `null` | `(row, action)` from `'actions'` cells |
 | `onrowclick` | `null` | `(row)` |
 
+The expander column is rendered only when `getChildren` is set.
 Columns sort on header click (toggle direction) unless `sortable: false`.
 Action buttons honour `enabled`, `danger`, and every `tone`
 (`ok | warn | accent | muted`).

@@ -307,5 +307,40 @@ const btnClass = (label) => {
   done()
 }
 
+// --- a section's getChildren: null is a leaf grid; absent inherits (#13) ----
+{
+  const tree = { r: [{ id: 'm', name: 'm' }], m: [{ id: 'l', name: 'l' }] }
+  const kidsOf = (r) => (tree[r.id] ? [{ title: 'kids', rows: tree[r.id] }] : [])
+  const grid = (section) => ({
+    columns: [{ key: 'name', label: 'Name' }],
+    rows: [{ id: 'r', name: 'r' }],
+    getChildren: (r) => [{ title: 'kids', rows: tree[r.id] ?? [], ...section }],
+  })
+  const ctlCols = (t) => t.querySelectorAll(':scope > thead > tr > th.ctl').length
+
+  let done = await run(grid({ getChildren: null }), DataGridC)
+  $('button.expander').click()
+  flushSync()
+  let tables = $$('table')
+  ok(tables.length === 2, `getChildren null: nested grid shown (got ${tables.length})`)
+  ok(tables.length === 2 && ctlCols(tables[1]) === 0 && !tables[1].querySelector('td.ctl'),
+    `getChildren null: leaf grid has no expander column (got ${tables[1] ? ctlCols(tables[1]) : '?'} th.ctl)`)
+  done()
+
+  done = await run({ ...grid({}), getChildren: kidsOf }, DataGridC)
+  $('button.expander').click()
+  flushSync()
+  tables = $$('table')
+  ok(tables.length === 2 && ctlCols(tables[1]) === 1 && !!tables[1].querySelector('button.expander'),
+    "getChildren absent: nested grid inherits the parent's (expander on its row)")
+  done()
+
+  done = await run({ ...grid({ getChildren: undefined }), getChildren: kidsOf }, DataGridC)
+  $('button.expander').click()
+  flushSync()
+  ok(!!$$('table')[1]?.querySelector('button.expander'), 'getChildren undefined: inherits too')
+  done()
+}
+
 console.log(failed ? `${failed} failed` : 'all passed')
 process.exit(failed ? 1 : 0)

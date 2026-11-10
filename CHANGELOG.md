@@ -3,6 +3,11 @@
 ## [Unreleased]
 
 ### 2026-11-10
+- **fix:** `DataGrid`: a nested section's `getChildren: null` now means
+  "no children" — a leaf grid with no expander column. Only an absent or
+  `undefined` `getChildren` inherits the parent's; before, `null` did too
+  (`??`), and the `() => []` workaround still drew an empty 28 px
+  expander column on every row. `web/test/check.mjs` checks both (#13).
 - **fix:** `DataGrid` select-all is scoped to its own grid's rows: with
   `selected` shared across nested grids, it adds or removes only that
   grid's ids instead of replacing the whole selection, and its header

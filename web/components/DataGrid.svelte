@@ -8,7 +8,9 @@
   //                        | 'actions' | (row) => string
   //   rows:        objects with a stable `id`; cells read row[key]
   //   getChildren: (row) => [{ title, rows, columns?, getChildren? }]
-  //                non-empty ⇒ the row gets an expander and nested grids
+  //                non-empty ⇒ the row gets an expander and nested grids.
+  //                A section's own getChildren: null ⇒ a leaf grid (no
+  //                expander column); absent/undefined ⇒ inherits this one.
   //   selectable:  null | 'single' | 'multi'  (bind:selected — array of ids)
   //   onaction:    (row, action) — invoked from 'actions' cells
   //   onrowclick:  (row)
@@ -194,7 +196,7 @@
                   <DataGrid
                     columns={section.columns || columns}
                     rows={section.rows}
-                    getChildren={section.getChildren ?? getChildren}
+                    getChildren={section.getChildren === undefined ? getChildren : section.getChildren}
                     {selectable}
                     bind:selected
                     {onaction}
