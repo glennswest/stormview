@@ -76,6 +76,11 @@ shared by every storm daemon and web UI. Cross-project rules live in
       actions span has no handler (no a11y warnings). check.mjs now fails on
       any Svelte compiler warning — failed on the old span (2 warnings,
       negative control), passes at the fix, 2026-11-07.
+- [x] #12 DataGrid select-all scoped to its own grid's rows (adds/removes
+      only them; header checked when all of them are, indeterminate when
+      some); 15 checks in web/test/check.mjs pass on sc-build at bd9854f and
+      9 fail with the old code put back (negative control, 2026-11-10).
+      stormdrive#41 can drop its workaround once it takes this commit.
 
 ### In progress
 - [x] #8 closed by the owner 2026-10-06: stormview is a library, exempt
