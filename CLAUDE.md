@@ -85,6 +85,10 @@ shared by every storm daemon and web UI. Cross-project rules live in
       expander column); absent/undefined inherits the parent's. 4 checks in
       web/test/check.mjs pass on sc-build at b4462ea; the leaf check fails
       with the old `??` put back (negative control, 2026-11-10).
+- [x] #22 LoginPanel `remember` prop (`null` | `{ label, checked }`): a
+      44px checkbox on both code steps, `oncode(code, step, remembered)`
+      (`undefined` when unset). 28 checks in web/test/check.mjs pass on
+      sc-build at 1e7aa94. stormcentral#123 can drop its copied Login.svelte.
 
 ### In progress
 - [x] #8 closed by the owner 2026-10-06: stormview is a library, exempt
@@ -97,12 +101,6 @@ shared by every storm daemon and web UI. Cross-project rules live in
       consumer; presentation's stale stormcentral#56 / test-container status
       replaced with the owner's 2026-10-06 scope (library only, no test
       container, #8 closed).
-
-### In progress (#22)
-- [ ] #22 LoginPanel `remember` prop (`null` | `{ label, checked }`): a
-      checkbox on the totp/enroll steps (min-height 44px), passed as
-      `oncode(code, step, remembered)` (`undefined` when unset); checks in
-      web/test/check.mjs; README. stormcentral#123 then drops its copy.
 
 ### Queued
 - #10 Decide (owner): storage view — stormview reads storage.storm.io, or
