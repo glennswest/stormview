@@ -362,7 +362,7 @@ host rendering its own buttons colours them the way the components do.
 Never on the VM and never as root: push, then
 
 ```sh
-sc-build                     # cargo build && cargo test on dev.g8.lo, from the pushed commit
+sc-build                     # cargo build && cargo test on a fresh build VM, from the pushed commit
 sc-build web/test/check.sh   # the Svelte half: compile + LoginPanel under jsdom
 ```
 
@@ -400,5 +400,10 @@ golden. Releases here are tags (`vX.Y.Z`) with matching `Cargo.toml` and
 
 What the contract or docs promise that the renderers don't do yet:
 
-- The renderer gaps still open are this repo's open issues (DataGrid
-  nesting #12/#13, `Action` request bodies #20, `NODE_FEEDS` #21).
+- The gaps still open are this repo's open issues: `Action` carries no
+  request body, so routes that take options can't be card actions (#20);
+  `NODE_FEEDS` has nfsop's stormd on the wrong port and omits
+  sectionsystems and five registered stormds (#21); the Marp deck
+  overflows 7 of its 12 slides (#26).
+- DataGrid select-all scoping (#12) and leaf sections (#13) are fixed and
+  no longer gaps.

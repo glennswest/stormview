@@ -19,7 +19,7 @@ shared by every storm daemon and web UI. Cross-project rules live in
   from GitHub `main` (Cargo git dependency; npm `github:glennswest/stormview#main`).
   A change here reaches a daemon when that daemon updates its lock and
   builds its own golden.
-- Build/test: `sc-build` (runs `cargo build && cargo test` on dev.g8.lo
+- Build/test: `sc-build` (runs `cargo build && cargo test` on a fresh build VM
   from the pushed commit). The Svelte half has no build step here — hosts
   compile the source with their own Vite/svelte plugin.
 

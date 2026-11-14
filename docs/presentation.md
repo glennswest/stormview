@@ -120,7 +120,8 @@ the renderers.
 ## What it does today — the UI system
 
 - **DataGrid** — injected columns/rows; sort; single/multi selection;
-  nested child grids via `getChildren`; cell renderers `text | mono |
+  nested child grids via `getChildren` (a section's `null` = leaf);
+  select-all scoped per grid; cell renderers `text | mono |
   health | metrics | actions | fn`
 - **ComponentCard** — any summary as a card: health, metrics with tones,
   relation chips, `has_many` pickers, actions (danger confirms)
@@ -129,7 +130,7 @@ the renderers.
   bulk start/stop/restart over a multi-selection
 - **RelationPicker**, **HealthDot**, **LoginPanel** (user + password or
   password-only, inline error; optional authenticator code step and
-  first-time enrolment with QR)
+  first-time enrolment with QR; optional "remember this device" box)
 - App-agnostic: no router, no API client — hosts pass `resolve` / `invoke`
 
 ---
@@ -168,7 +169,7 @@ the renderers.
 - Consumers track GitHub `main`: a change reaches a running system when a
   consumer updates its lock (`cargo update -p stormview` / npm reinstall),
   rebuilds, and ships **its own** golden
-- Build and test: `sc-build` on dev.g8.lo (`cargo build && cargo test`);
+- Build and test: `sc-build` on a fresh build VM (`cargo build && cargo test`);
   the Svelte half: `sc-build web/test/check.sh` compiles every component
   and drives LoginPanel under jsdom, then builds a host app with vite +
   vite-plugin-svelte (no plugin warnings); hosts build it into their own UIs

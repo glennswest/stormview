@@ -2,6 +2,13 @@
 
 ## [Unreleased]
 
+### 2026-11-14
+- **docs:** README, CLAUDE.md and the deck refreshed from the code since
+  2026-11-07: `sc-build` runs on a fresh build VM (dev.g8.lo is retired);
+  Known gaps now lists the open issues (#20, #21, #26) and drops the fixed
+  DataGrid ones (#12/#13); the deck mentions leaf sections, per-grid
+  select-all and LoginPanel `remember`. Deck overflow filed as #26 (open).
+
 ### 2026-11-10
 - **feat:** `LoginPanel` takes an optional `remember` prop (`null` |
   `{ label, checked }`): a touch-sized (min-height 44px) checkbox on the
