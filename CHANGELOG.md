@@ -2,6 +2,16 @@
 
 ## [Unreleased]
 
+### 2026-11-20
+- **fix:** test feed probe: only a failed connect makes a candidate absent
+  (and falls through to the next). A feed that connects and then sends
+  malformed HTTP, truncates its body or times out reading is reported
+  `Bad` (a failure), no longer skipped as absent (#29, 087732050848).
+- **fix:** test `ws:` check compares the first `/ws/components` snapshot
+  with `GET` summary for summary, keyed by id (health, metrics, actions,
+  relations, link — not just the ids), re-reading `GET` once before it
+  reports a mismatch, which names each differing field (#29, 136367370430).
+
 ### 2026-11-14
 - **docs:** README, CLAUDE.md and the deck refreshed from the code since
   2026-11-07: `sc-build` runs on a fresh build VM (dev.g8.lo is retired);

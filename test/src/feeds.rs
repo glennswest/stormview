@@ -7,7 +7,7 @@
 use crate::env::FeedAddr;
 use crate::http::{self, Ws};
 use serde_json::Value;
-use std::collections::HashSet;
+use std::collections::{BTreeMap, HashSet};
 use std::time::{Duration, Instant};
 use stormview::ComponentSummary;
 
@@ -53,7 +53,11 @@ pub fn probe(f: &FeedAddr, timeout: Duration) -> Probe {
     let mut tried = Vec::new();
     for addr in &f.candidates {
         match http::get(addr, PATH, timeout) {
-            Err(e) => tried.push(format!("{addr}: {e}")),
+            // Nothing there: try the next candidate. Anything that connected
+            // and then broke (malformed HTTP, a truncated body, a read
+            // timeout) is a live feed that is broken, not an absent one.
+            Err(e @ http::Error::Connect(_)) => tried.push(format!("{addr}: {e}")),
+            Err(e @ http::Error::Protocol(_)) => return Probe::Bad(format!("{addr}{PATH}: {e}")),
             Ok(r) if r.status == 401 || r.status == 403 => {
                 return Probe::Auth(format!("{addr}{PATH} answers {} (behind a login)", r.status))
             }
@@ -184,30 +188,73 @@ pub enum WsOutcome {
 }
 
 /// The first `/ws/components` snapshot reads with the contract and holds the
-/// same components as `GET` (read again if the first comparison misses: the
-/// feed may change in between).
+/// same components as `GET`, value for value (read again if the first
+/// comparison misses: the feed may change in between).
 pub fn ws_matches(feed: &Feed, timeout: Duration) -> Result<WsOutcome, String> {
     let body = match http::ws_first_text(&feed.addr, WS_PATH, timeout).map_err(|e| e.to_string())? {
         Ws::Refused(s) => return Ok(WsOutcome::Refused(s)),
         Ws::Text(b) => b,
     };
     let (_, snap) = parse(&body).map_err(|e| format!("snapshot: {e}"))?;
-    let ids = |f: &[ComponentSummary]| f.iter().map(|c| c.id.clone()).collect::<HashSet<_>>();
-    let got = ids(&snap);
-    if got == ids(&feed.summaries) {
+    if compare(&snap, &feed.summaries).is_none() {
         return Ok(WsOutcome::Same(snap.len()));
     }
     let again = http::get(&feed.addr, PATH, timeout).map_err(|e| e.to_string())?;
-    let (_, now) = parse(&again.body)?;
-    let want = ids(&now);
-    if got == want {
-        return Ok(WsOutcome::Same(snap.len()));
+    if again.status != 200 {
+        return Err(format!("{}{PATH} answers {} on the second read", feed.addr, again.status));
     }
-    let mut only_ws: Vec<_> = got.difference(&want).cloned().collect();
-    let mut only_get: Vec<_> = want.difference(&got).cloned().collect();
-    only_ws.sort();
-    only_get.sort();
-    Ok(WsOutcome::Differs(format!("only in the snapshot: {only_ws:?}; only in GET: {only_get:?}")))
+    let (_, now) = parse(&again.body)?;
+    Ok(match compare(&snap, &now) {
+        None => WsOutcome::Same(snap.len()),
+        Some(d) => WsOutcome::Differs(d),
+    })
+}
+
+/// How a snapshot differs from a GET: components only in one, then each
+/// component whose summary differs, by id, with the first differing field.
+/// `None` when they hold the same summaries (order aside).
+pub fn compare(snap: &[ComponentSummary], get: &[ComponentSummary]) -> Option<String> {
+    let keyed = |f: &[ComponentSummary]| {
+        f.iter().map(|c| (c.id.clone(), serde_json::to_value(c).unwrap_or(Value::Null))).collect::<BTreeMap<_, _>>()
+    };
+    let (ws, want) = (keyed(snap), keyed(get));
+    if ws == want {
+        return None;
+    }
+    let mut out = Vec::new();
+    let only_ws: Vec<_> = ws.keys().filter(|k| !want.contains_key(*k)).collect();
+    let only_get: Vec<_> = want.keys().filter(|k| !ws.contains_key(*k)).collect();
+    if !only_ws.is_empty() || !only_get.is_empty() {
+        out.push(format!("only in the snapshot: {only_ws:?}; only in GET: {only_get:?}"));
+    }
+    for (id, v) in &ws {
+        if let Some(w) = want.get(id).filter(|w| *w != v) {
+            out.push(format!("{id}: {}", diff_values(v, w, "")));
+        }
+    }
+    Some(out.join("; "))
+}
+
+/// The first place a snapshot's summary and GET's differ, as a JSON path
+/// with both values.
+fn diff_values(ws: &Value, get: &Value, at: &str) -> String {
+    match (ws, get) {
+        (Value::Object(a), Value::Object(b)) => {
+            if let Some(k) = a.keys().chain(b.keys()).find(|k| a.get(*k) != b.get(*k)) {
+                let null = Value::Null;
+                return diff_values(a.get(k).unwrap_or(&null), b.get(k).unwrap_or(&null), &format!("{at}.{k}"));
+            }
+            String::new()
+        }
+        (Value::Array(a), Value::Array(b)) if a.len() == b.len() => a
+            .iter()
+            .zip(b)
+            .enumerate()
+            .find(|(_, (x, y))| x != y)
+            .map(|(i, (x, y))| diff_values(x, y, &format!("{at}[{i}]")))
+            .unwrap_or_default(),
+        _ => format!("{} is {ws} in the snapshot, {get} in GET", if at.is_empty() { "." } else { at }),
+    }
 }
 
 /// Read a feed once, timed: (microseconds, component count).
@@ -265,6 +312,157 @@ mod tests {
         v["metrics"][0]["colour"] = json!("red");
         let (raw, feed) = parse(&serde_json::to_vec(&json!([v])).unwrap()).unwrap();
         assert_eq!(drift(&raw, &feed), ["process:web: .metrics[0].colour is not in the contract"]);
+    }
+
+    use std::io::{Read, Write};
+    use std::net::TcpListener;
+
+    const T: Duration = Duration::from_secs(5);
+
+    /// A local server: each connection's request head is handed to `answer`,
+    /// whose bytes are written back before the connection closes.
+    fn serve(answer: impl Fn(&str) -> Vec<u8> + Send + 'static) -> String {
+        let l = TcpListener::bind("127.0.0.1:0").unwrap();
+        let addr = l.local_addr().unwrap().to_string();
+        std::thread::spawn(move || {
+            for s in l.incoming() {
+                let Ok(mut s) = s else { continue };
+                let mut req = Vec::new();
+                let mut b = [0u8; 1];
+                while !req.ends_with(b"\r\n\r\n") && s.read(&mut b).unwrap_or(0) == 1 {
+                    req.push(b[0]);
+                }
+                let _ = s.write_all(&answer(&String::from_utf8_lossy(&req)));
+            }
+        });
+        addr
+    }
+
+    /// An address nothing listens on.
+    fn dead() -> String {
+        let l = TcpListener::bind("127.0.0.1:0").unwrap();
+        l.local_addr().unwrap().to_string()
+    }
+
+    fn ok(body: &[u8]) -> Vec<u8> {
+        let mut r = format!("HTTP/1.1 200 OK\r\nContent-Length: {}\r\n\r\n", body.len()).into_bytes();
+        r.extend(body);
+        r
+    }
+
+    fn feed_addr(candidates: &[&str]) -> FeedAddr {
+        FeedAddr { name: "t".into(), candidates: candidates.iter().map(|c| c.to_string()).collect() }
+    }
+
+    fn one(c: &ComponentSummary) -> Vec<u8> {
+        serde_json::to_vec(&[c]).unwrap()
+    }
+
+    // 087732050848: only a failed connect is an absent candidate.
+    #[test]
+    fn a_connect_failure_is_absent_and_falls_through() {
+        let gone = dead();
+        assert!(matches!(probe(&feed_addr(&[&gone]), T), Probe::Absent(_)));
+        let body = one(&example());
+        let live = serve(move |_| ok(&body));
+        match probe(&feed_addr(&[&gone, &live]), T) {
+            Probe::Found(f) => assert_eq!(f.addr, live),
+            _ => panic!("the second candidate answers"),
+        }
+    }
+
+    #[test]
+    fn malformed_http_is_bad_not_absent() {
+        let a = serve(|_| b"garbage\r\n".to_vec());
+        match probe(&feed_addr(&[&a, &dead()]), T) {
+            Probe::Bad(d) => assert!(d.contains("not an HTTP response"), "{d}"),
+            _ => panic!("a feed that answers garbage is broken, not absent"),
+        }
+    }
+
+    #[test]
+    fn a_truncated_body_is_bad_not_absent() {
+        let a = serve(|_| b"HTTP/1.1 200 OK\r\nContent-Length: 100\r\n\r\n[]".to_vec());
+        assert!(matches!(probe(&feed_addr(&[&a]), T), Probe::Bad(_)));
+    }
+
+    #[test]
+    fn a_read_timeout_is_bad_not_absent() {
+        let a = serve(|_| {
+            std::thread::sleep(Duration::from_millis(1500));
+            Vec::new()
+        });
+        match probe(&feed_addr(&[&a]), Duration::from_millis(300)) {
+            Probe::Bad(_) => {}
+            _ => panic!("a feed that connects and never answers is broken"),
+        }
+    }
+
+    // 136367370430: the snapshot is compared value for value, by id.
+    fn ws_frame(body: &[u8]) -> Vec<u8> {
+        let mut f = vec![0x81];
+        if body.len() < 126 {
+            f.push(body.len() as u8);
+        } else {
+            f.push(126);
+            f.extend((body.len() as u16).to_be_bytes());
+        }
+        f.extend(body);
+        f
+    }
+
+    /// A feed whose websocket pushes `snap` and whose GET serves `get`.
+    fn ws_feed(snap: Vec<u8>, get: Vec<u8>) -> String {
+        serve(move |req| {
+            if req.to_ascii_lowercase().contains("upgrade: websocket") {
+                let mut r = b"HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\n\
+                    Sec-WebSocket-Accept: s3pPLMBiTxaQ9kYGzzhZRbK+xOo=\r\n\r\n"
+                    .to_vec();
+                r.extend(ws_frame(&snap));
+                r
+            } else {
+                ok(&get)
+            }
+        })
+    }
+
+    fn feed_at(addr: String, summaries: Vec<ComponentSummary>) -> Feed {
+        Feed { name: "t".into(), addr, raw: Value::Null, summaries }
+    }
+
+    #[test]
+    fn a_snapshot_with_stale_values_differs() {
+        let get = example();
+        let mut stale = get.clone();
+        stale.health = stormview::Health::Warn;
+        stale.metrics[0].value = "3".into();
+        let addr = ws_feed(one(&stale), one(&get));
+        match ws_matches(&feed_at(addr, vec![get]), T).unwrap() {
+            WsOutcome::Differs(d) => assert!(d.contains("process:web: .health is \"warn\" in the snapshot, \"ok\" in GET"), "{d}"),
+            _ => panic!("same ids, different health: not the same feed"),
+        }
+    }
+
+    #[test]
+    fn a_snapshot_matching_the_second_get_is_same() {
+        let first = example();
+        let mut now = first.clone();
+        now.detail = "changed between reads".into();
+        let addr = ws_feed(one(&now), one(&now));
+        assert!(matches!(ws_matches(&feed_at(addr, vec![first]), T).unwrap(), WsOutcome::Same(1)));
+    }
+
+    #[test]
+    fn compare_ignores_order_and_names_every_difference() {
+        let a = example();
+        let mut b = a.clone();
+        b.id = "system".into();
+        assert_eq!(compare(&[a.clone(), b.clone()], &[b.clone(), a.clone()]), None);
+        let mut a2 = a.clone();
+        a2.actions[0].enabled = !a2.actions[0].enabled;
+        let d = compare(&[a2, b], &[a]).unwrap();
+        assert!(d.contains("only in the snapshot: [\"system\"]"), "{d}");
+        assert!(d.contains("process:web: .actions[0].enabled"), "{d}");
     }
 
     #[test]
