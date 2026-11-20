@@ -102,6 +102,14 @@ shared by every storm daemon and web UI. Cross-project rules live in
       replaced with the owner's 2026-10-06 scope (library only, no test
       container, #8 closed).
 
+### In progress (#29)
+- [ ] #29 review findings in test/src/feeds.rs: 087732050848 (probe treats
+      protocol failures as absent; only connect failures are now) and
+      136367370430 (ws snapshot compared by ids only; now whole normalized
+      summaries keyed by id, re-read GET before a mismatch). Tests in
+      feeds.rs against a local TCP server; `sc-build 'cargo test
+      --manifest-path test/Cargo.toml'`.
+
 ### Queued
 - #10 Decide (owner): storage view — stormview reads storage.storm.io, or
   a daemon serves it as a feed; #9 waits on it. 2026-10-06: both labelled
