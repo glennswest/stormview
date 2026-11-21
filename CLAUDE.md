@@ -110,6 +110,13 @@ shared by every storm daemon and web UI. Cross-project rules live in
       feeds.rs against a local TCP server; `sc-build 'cargo test
       --manifest-path test/Cargo.toml'`.
 
+### In progress (#30)
+- [ ] #30 review finding 5ae9e3e78a02: default action invoker treats HTTP
+      errors as success. Shared `invokeAction` in utils.js throws on a
+      non-2xx; ComponentCard shows the failure under its actions;
+      ComponentGrid shows row/bulk failures and keeps failed bulk targets
+      selected. Checks in web/test/check.mjs with a stubbed fetch.
+
 ### Queued
 - #10 Decide (owner): storage view — stormview reads storage.storm.io, or
   a daemon serves it as a feed; #9 waits on it. 2026-10-06: both labelled
