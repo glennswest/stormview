@@ -278,12 +278,14 @@ its id (`start` → ok, `restart` → warn), for feeds that predate `tone`.
 |---|---|---|
 | `component` | — | the summary |
 | `resolve` | `() => undefined` | `(id) => ComponentSummary` from the host's feed |
-| `invoke` | `null` | `async (action)`; default is `fetch(action.path, {method})` |
+| `invoke` | `null` | `async (action)`; default is `invokeAction` — `fetch(action.path, {method})`, throwing on a non-2xx |
 
 `has_one`/`belongs_to` relations render as chips (follow `href`, else the
 first target's `link`); `has_many` as a `RelationPicker` plus a ⊞ link to
 `#/grid?id=<id>&rel=<name>`. `danger` actions confirm first; buttons are
-disabled while one runs.
+disabled while one runs. An action that fails (`invoke` rejects, or the
+default fetch answers non-2xx) is shown under the buttons as
+`<label>: <error>` until the next action runs.
 
 **`ComponentGrid`** — the feed as a relational grid on top of `DataGrid`.
 
@@ -296,8 +298,10 @@ disabled while one runs.
 `has_one`/`has_many` edges expand into nested grids (ancestors excluded,
 so cycles terminate). Rows are multi-selectable; with two or more selected,
 a bulk bar offers **start / stop / restart** when every selected row has
-that action id enabled, and confirms before running. Clicking a row
-follows its `link`. The host implements the `#/grid` route itself.
+that action id enabled, and confirms before running. A failed row or bulk
+action is listed above the grid (`<row>: <label>: <error>`, dismissable);
+after a bulk run only the targets that failed stay selected, ready to
+retry. Clicking a row follows its `link`. The host implements the `#/grid` route itself.
 
 **`RelationPicker`** — a `has_many` edge as a `<select>` labelled
 `name (count)`. Props: `relation`, `resolve`, `onpick = null` (default:
@@ -356,6 +360,10 @@ escapes are stripped and all text is HTML-escaped. `actionTone(action)`
 gives the class an action's button wears: `'danger'` when `danger`, else
 its `tone` if it is one of `ok | warn | accent | muted`, else `''` — so a
 host rendering its own buttons colours them the way the components do.
+`invokeAction(action)` is the components' default invoker: it fetches
+`action.path` with `action.method` and throws on a non-2xx response
+(`"500 Internal Server Error: <start of body>"`); `actionError(action, e)`
+is the `"<label>: <message>"` line they show for a failure.
 
 ## Building and testing
 

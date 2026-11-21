@@ -116,3 +116,25 @@ export function actionTone(action) {
   if (action?.danger) return 'danger'
   return ACTION_TONES.has(action?.tone) ? action.tone : ''
 }
+
+// The default way a renderer performs an Action when the host passes no
+// `invoke`: fetch its method + path. A response that is not 2xx is a
+// failure — fetch itself only rejects on a network error — so it throws,
+// naming the status and the start of the body (#30).
+export async function invokeAction(action) {
+  const res = await fetch(action.path, { method: action.method })
+  if (!res.ok) {
+    let body = ''
+    try {
+      body = (await res.text()).trim().slice(0, 200)
+    } catch {}
+    const status = `${res.status}${res.statusText ? ' ' + res.statusText : ''}`
+    throw new Error(body ? `${status}: ${body}` : status)
+  }
+  return res
+}
+
+// The text a failed action shows: "<label>: <error message>".
+export function actionError(action, e) {
+  return `${action?.label ?? action?.id ?? 'action'}: ${e?.message ?? String(e)}`
+}

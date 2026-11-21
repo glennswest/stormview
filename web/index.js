@@ -14,4 +14,6 @@ export {
   escapeHtml,
   ansiToHtml,
   actionTone,
+  invokeAction,
+  actionError,
 } from './utils.js'

@@ -63,7 +63,8 @@ const load = async (f) => import(pathToFileURL(join(process.cwd(), f)).href)
 const LoginPanel = (await load('LoginPanel.js')).default
 const ComponentCard = (await load('ComponentCard.js')).default
 const DataGridC = (await load('DataGrid.js')).default
-const { actionTone, formatDuration } = await load('utils.js')
+const ComponentGridC = (await load('ComponentGrid.js')).default
+const { actionTone, formatDuration, invokeAction } = await load('utils.js')
 
 const settle = async (ms = 0) => {
   await new Promise((r) => setTimeout(r, ms))
@@ -398,6 +399,91 @@ const btnClass = (label) => {
   $('button.expander').click()
   flushSync()
   ok(!!$$('table')[1]?.querySelector('button.expander'), 'getChildren undefined: inherits too')
+  done()
+}
+
+// --- the default invoker fails on a non-2xx; failures are shown (#30) -------
+{
+  // fetch stubbed: a path in `fails` answers 500 with a body, others 200.
+  const calls = []
+  let fails = new Set()
+  globalThis.fetch = async (path, init) => {
+    calls.push([init?.method, path])
+    return fails.has(path)
+      ? new Response('boom', { status: 500, statusText: 'Internal Server Error' })
+      : new Response('{}', { status: 200 })
+  }
+  globalThis.confirm = () => true
+  const act2 = (id, path) => ({ id, label: id, method: 'POST', path, enabled: true })
+
+  let threw = null
+  try {
+    await invokeAction(act2('x', '/x'))
+  } catch (e) {
+    threw = e
+  }
+  ok(threw === null, 'invokeAction: a 200 resolves')
+  fails = new Set(['/x'])
+  try {
+    await invokeAction(act2('x', '/x'))
+  } catch (e) {
+    threw = e
+  }
+  ok(threw?.message === '500 Internal Server Error: boom', `invokeAction: a 500 throws with status and body (got ${threw?.message})`)
+
+  // ComponentCard, default invoker
+  fails = new Set(['/c1/restart'])
+  let done = await run({ component: { id: 'c1', kind: 'process', label: 'c1', health: 'ok',
+    actions: [act2('restart', '/c1/restart'), act2('stop', '/c1/stop')] } }, ComponentCard)
+  const btn = (label) => $$('button').find((b) => b.textContent.trim() === label)
+  btn('restart').click()
+  await settle()
+  ok(calls.some(([m, p]) => m === 'POST' && p === '/c1/restart'), 'ComponentCard: default invoke fetches method + path')
+  ok(text('.failure') === 'restart: 500 Internal Server Error: boom', `ComponentCard: a 500 is shown (got ${JSON.stringify(text('.failure'))})`)
+  ok(!btn('restart').disabled, 'ComponentCard: buttons enabled again after a failure')
+  btn('stop').click()
+  await settle()
+  ok(!$('.failure'), 'ComponentCard: a later success clears the failure')
+  done()
+
+  // ComponentCard, host invoke that rejects
+  done = await run({ component: { id: 'c2', kind: 'process', label: 'c2', health: 'ok', actions: [act2('start', '/c2/start')] },
+    invoke: async () => { throw new Error('denied') } }, ComponentCard)
+  btn('start').click()
+  await settle()
+  ok(text('.failure') === 'start: denied', `ComponentCard: a rejecting invoke is shown (got ${JSON.stringify(text('.failure'))})`)
+  done()
+
+  // ComponentGrid bulk: three rows, the middle one's restart fails
+  const comps = ['g1', 'g2', 'g3'].map((id) => ({ id, kind: 'process', label: id, health: 'ok', actions: [act2('restart', `/${id}/restart`)] }))
+  fails = new Set(['/g2/restart'])
+  calls.length = 0
+  done = await run({ components: comps }, ComponentGridC)
+  const nameOf = (tr) => [...tr.querySelectorAll(':scope > td')].map((td) => td.textContent.trim()).find((t) => /^g\d$/.test(t))
+  const sel = () => $$('tbody tr.selected').map(nameOf).sort().join(',')
+  for (const tr of $$('tbody tr')) tr.querySelector('td.ctl input[type=checkbox]').click()
+  flushSync()
+  ok(sel() === 'g1,g2,g3', `ComponentGrid: three rows selected (got ${sel()})`)
+  const bulkBtn = $$('.bulk-bar button').find((b) => / all$/.test(b.textContent.trim()))
+  bulkBtn.click()
+  await settle()
+  await settle()
+  ok(calls.filter(([, p]) => p.endsWith('/restart')).length === 3, `ComponentGrid: bulk runs every target (got ${calls.length})`)
+  ok(sel() === 'g2', `ComponentGrid: the failed target stays selected, the rest are cleared (got ${sel()})`)
+  ok(text('.failures div') === 'g2: restart: 500 Internal Server Error: boom', `ComponentGrid: the bulk failure is shown (got ${JSON.stringify(text('.failures div'))})`)
+  $('.failures .dismiss').click()
+  flushSync()
+  ok(!$('.failures'), 'ComponentGrid: failures can be dismissed')
+
+  // ComponentGrid row action failure
+  const rowBtn = $$('tbody tr').find((tr) => nameOf(tr) === 'g2').querySelector('td button:not(.expander)')
+  rowBtn.click()
+  await settle()
+  ok(text('.failures div') === 'g2: restart: 500 Internal Server Error: boom', `ComponentGrid: a row action failure is shown (got ${JSON.stringify(text('.failures div'))})`)
+  fails = new Set()
+  rowBtn.click()
+  await settle()
+  ok(!$('.failures'), 'ComponentGrid: a later success clears it')
   done()
 }
 

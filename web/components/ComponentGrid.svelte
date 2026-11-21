@@ -6,10 +6,13 @@
   // assignment on each row's link.
   import DataGrid from './DataGrid.svelte'
   import RelationPicker from './RelationPicker.svelte'
+  import { invokeAction, actionError } from '../utils.js'
 
   let { components = [], rootIds = null, invoke = null } = $props()
   let selected = $state([])
   let busy = $state(false)
+  // Failures of the last row or bulk action, one line per failed component.
+  let failures = $state([])
 
   const byId = $derived(new Map(components.map((c) => [c.id, c])))
   const resolve = (id) => byId.get(id)
@@ -58,17 +61,16 @@
     if (row.link) location.hash = row.link
   }
 
-  async function run(action) {
-    if (invoke) await invoke(action)
-    else await fetch(action.path, { method: action.method })
-  }
+  const run = (action) => (invoke || invokeAction)(action)
 
   async function rowAction(row, action) {
     if (action.danger && !confirm(`${action.label} ${row.label}?`)) return
+    failures = []
     try {
       await run(action)
     } catch (e) {
       console.error(e)
+      failures = [`${row.label}: ${actionError(action, e)}`]
     }
   }
 
@@ -81,9 +83,9 @@
     return ids
       .map((id) => {
         const acts = rows
-          .map((r) => (r.actions || []).find((a) => a.id === id && a.enabled))
-          .filter(Boolean)
-        return acts.length === rows.length ? { id, label: acts[0].label, acts } : null
+          .map((r) => ({ row: r, act: (r.actions || []).find((a) => a.id === id && a.enabled) }))
+          .filter((x) => x.act)
+        return acts.length === rows.length ? { id, label: acts[0].act.label, acts } : null
       })
       .filter(Boolean)
   })
@@ -91,15 +93,22 @@
   async function runBulk(bulk) {
     if (!confirm(`${bulk.label} ${bulk.acts.length} components?`)) return
     busy = true
-    for (const a of bulk.acts) {
+    failures = []
+    const failed = []
+    const lines = []
+    for (const { row, act } of bulk.acts) {
       try {
-        await run(a)
+        await run(act)
       } catch (e) {
         console.error(e)
+        failed.push(row.id)
+        lines.push(`${row.label}: ${actionError(act, e)}`)
       }
     }
     busy = false
-    selected = []
+    // Failed targets stay selected so the same bulk action can be retried.
+    selected = failed
+    failures = lines
   }
 </script>
 
@@ -110,6 +119,15 @@
       <button disabled={busy} onclick={() => runBulk(b)}>{b.label} all</button>
     {/each}
     <button class="clear" onclick={() => (selected = [])}>Clear</button>
+  </div>
+{/if}
+
+{#if failures.length}
+  <div class="failures" role="alert">
+    {#each failures as f}
+      <div>{f}</div>
+    {/each}
+    <button class="dismiss" onclick={() => (failures = [])}>Dismiss</button>
   </div>
 {/if}
 
@@ -144,6 +162,20 @@
     font-size: 13px;
   }
   .bulk-bar .clear { margin-left: auto; }
+  .failures {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 8px 12px;
+    margin-bottom: 10px;
+    color: var(--error);
+    background: var(--error-bg);
+    border: 1px solid var(--error-border);
+    border-radius: var(--radius);
+    font-size: 13px;
+    overflow-wrap: anywhere;
+  }
+  .failures .dismiss { align-self: flex-end; }
   .pickers {
     display: flex;
     gap: 8px;

@@ -3,6 +3,12 @@
 ## [Unreleased]
 
 ### 2026-11-20
+- **fix:** `ComponentCard` / `ComponentGrid`: the default action invoker
+  (`invokeAction`, now exported) treats a non-2xx response as a failure —
+  fetch resolved on a 4xx/5xx, so a failed action looked like success. The
+  card shows a failed action under its buttons; the grid lists failed row
+  and bulk actions above it, and a bulk run keeps only its failed targets
+  selected for retry (#30, 5ae9e3e78a02).
 - **fix:** test feed probe: only a failed connect makes a candidate absent
   (and falls through to the next). A feed that connects and then sends
   malformed HTTP, truncates its body or times out reading is reported

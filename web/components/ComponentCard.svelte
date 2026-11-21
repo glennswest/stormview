@@ -5,7 +5,7 @@
   // action's own method+path). Links are plain hash hrefs.
   import HealthDot from './HealthDot.svelte'
   import RelationPicker from './RelationPicker.svelte'
-  import { actionTone } from '../utils.js'
+  import { actionTone, invokeAction, actionError } from '../utils.js'
 
   let {
     component,
@@ -14,6 +14,8 @@
   } = $props()
 
   let busy = $state(false)
+  // The last action's failure, shown under the buttons until the next run.
+  let failure = $state('')
 
   function followRelation(r) {
     if (r.href) {
@@ -50,11 +52,12 @@
   async function run(action) {
     if (action.danger && !confirm(`${action.label} ${component.label}?`)) return
     busy = true
+    failure = ''
     try {
-      if (invoke) await invoke(action)
-      else await fetch(action.path, { method: action.method })
+      await (invoke || invokeAction)(action)
     } catch (e) {
       console.error(e)
+      failure = actionError(action, e)
     } finally {
       busy = false
     }
@@ -125,6 +128,9 @@
         >
       {/each}
     </div>
+    {#if failure}
+      <div class="failure" role="alert">{failure}</div>
+    {/if}
   {/if}
 </div>
 
@@ -211,4 +217,13 @@
 
   .actions { display: flex; gap: 6px; padding-top: 4px; }
   .actions button { padding: 4px 12px; font-size: 12px; }
+  .failure {
+    font-size: 12px;
+    color: var(--error);
+    background: var(--error-bg);
+    border: 1px solid var(--error-border);
+    border-radius: var(--radius-sm);
+    padding: 4px 8px;
+    overflow-wrap: anywhere;
+  }
 </style>
