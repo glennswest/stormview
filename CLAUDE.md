@@ -90,6 +90,12 @@ shared by every storm daemon and web UI. Cross-project rules live in
       (`undefined` when unset). 28 checks in web/test/check.mjs pass on
       sc-build at 1e7aa94. stormcentral#123 can drop its copied Login.svelte.
 
+- [x] #30 review finding 5ae9e3e78a02: default action invoker
+      (`invokeAction`, utils.js) throws on a non-2xx; ComponentCard shows a
+      failed action under its buttons; ComponentGrid lists row/bulk failures
+      and keeps failed bulk targets selected. 14 checks in
+      web/test/check.mjs (stubbed fetch) pass on sc-build at caf6aa6.
+
 ### In progress
 - [x] #8 closed by the owner 2026-10-06: stormview is a library, exempt
       from the test-container rule; sc-build's tests are its tests.
@@ -109,13 +115,6 @@ shared by every storm daemon and web UI. Cross-project rules live in
       summaries keyed by id, re-read GET before a mismatch). Tests in
       feeds.rs against a local TCP server; `sc-build 'cargo test
       --manifest-path test/Cargo.toml'`.
-
-### In progress (#30)
-- [ ] #30 review finding 5ae9e3e78a02: default action invoker treats HTTP
-      errors as success. Shared `invokeAction` in utils.js throws on a
-      non-2xx; ComponentCard shows the failure under its actions;
-      ComponentGrid shows row/bulk failures and keeps failed bulk targets
-      selected. Checks in web/test/check.mjs with a stubbed fetch.
 
 ### Queued
 - #10 Decide (owner): storage view — stormview reads storage.storm.io, or
